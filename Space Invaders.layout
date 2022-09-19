@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout>
 	<Files>
-		<File Name="main.cpp" Top="Yes" Tabpos="1" TopLine="76">
-			<Cursor Line="44" Column="49"/>
+		<File Name="main.cpp" Top="Yes" Tabpos="1" TopLine="221">
+			<Cursor Line="252" Column="1"/>
+		</File>
+		<File Name="libraries\object loader.h" Top="No" Tabpos="2" TopLine="1">
+			<Cursor Line="26" Column="1"/>
 		</File>
 	</Files>
+	<Folders>
+		<Folder Name="game_classes" Expanded="Yes"/>
+	</Folders>
 </Layout>

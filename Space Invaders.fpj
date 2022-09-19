@@ -30,9 +30,17 @@
 	<AppType Value="CONSOLE"/>
 	<Files>
 		<File Name="main.cpp"/>
-		<File Name="player.h"/>
-		<File Name="invader.h"/>
-		<File Name="object loader.h"/>
+		<Folder Name="assets"/>
+		<Folder Name="game_classes">
+			<File Name="invader.h"/>
+			<File Name="Player.cpp"/>
+			<File Name="Object.cpp"/>
+			<File Name="Face.cpp"/>
+			<File Name="Vertex.cpp"/>
+		</Folder>
+		<Folder Name="libraries">
+			<File Name="object loader.h"/>
+		</Folder>
 	</Files>
 	<AppIcon>
 		0000010001003030000001002000A82500001600000028000000300000006000
