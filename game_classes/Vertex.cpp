@@ -14,4 +14,9 @@ class Vertex{
             this->colorG = 0.0;
             this->colorB = 0.0;
         }
+        Vertex() {
+            this->colorR = 0.0;
+            this->colorG = 0.0;
+            this->colorB = 0.0;
+        }
 };

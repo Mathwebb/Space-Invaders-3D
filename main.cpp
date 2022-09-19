@@ -38,6 +38,8 @@ using namespace std;
 #define GAME_OVER 3
 
 int windowWidth = 640, windowHeight = 480, angle = 0, selectedMenuOption = 0, gameState = 0;
+float playerX = 0, playerY = 0, playerZ = 0;
+
 void initGlut(const char *nome_janela, int argc, char** argv);
 void reshapeCallback(int w, int h);
 void displayCallback(void);
@@ -57,6 +59,7 @@ void initGlut(const char *nome_janela, int argc, char** argv){
     glutInitWindowPosition(100,100);
     glutCreateWindow(nome_janela);
 
+	glEnable(GL_DEPTH_TEST);
     glutReshapeFunc(reshapeCallback);
     glutDisplayFunc(displayCallback);
     glutKeyboardFunc(keyboardCallback);
@@ -85,9 +88,9 @@ void reshapeCallback(int w, int h){
 	
 	    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
 	
-	    gluPerspective(60, (float)w/(float)h, 1.0, 1000.0);
+	    gluPerspective(60, (float)w/(float)h, 1.0, 10000.0);
 	
-	    gluLookAt (0.0, 0.0, 100.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	    gluLookAt (playerX, playerY+40, playerZ+500, playerX, playerY, playerZ, 0.0, 1.0, 0.0);
 	
 	    glMatrixMode (GL_MODELVIEW);
 	}
@@ -98,10 +101,17 @@ void displayCallback(void){
     glLoadIdentity();
 
     if (gameState == MAIN_MENU){
-		showMainMenu(-windowWidth/2+windowWidth*0.1, 0.0, 0.0, -20.0);
+		showMainMenu(-windowWidth/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if(gameState == GAME_RUNNING){
 		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
+		glTranslatef(playerX, playerY, playerZ);
+		glutSolidCube(50);
+		glPopMatrix();
+
+		glPushMatrix();
+		glColor3f(1.0, 0.0, 0.0);
+		glTranslatef(0.0, 0.0, -100.0);
 		glutSolidCube(50);
 		glPopMatrix();
 	}
@@ -156,12 +166,43 @@ void keyboardCallback(unsigned char key, int x, int y){
 void keyboardCallbackSpecial(int key, int x, int y){
 	switch(key){
 		case GLUT_KEY_UP:
+			if (gameState == MAIN_MENU){
+				if (selectedMenuOption > 0){
+					selectedMenuOption--;
+					displayCallback();
+				}
+			}else if (gameState == GAME_RUNNING){
+				playerY += 10;
+				reshapeCallback(windowWidth, windowHeight);
+				displayCallback();
+			}
+
 			break;
 		case GLUT_KEY_DOWN:
+			if (gameState == MAIN_MENU){
+				if (selectedMenuOption < 1){
+					selectedMenuOption++;
+					displayCallback();
+				}
+			}else if (gameState == GAME_RUNNING){
+				playerY -= 10;
+				reshapeCallback(windowWidth, windowHeight);
+				displayCallback();
+			}
 			break;
 		case GLUT_KEY_RIGHT:
+			if (gameState == GAME_RUNNING){
+				playerX += 10;
+				reshapeCallback(windowWidth, windowHeight);
+				displayCallback();
+			}
 			break;
 		case GLUT_KEY_LEFT:
+			if (gameState == GAME_RUNNING){
+				playerX -= 10;
+				reshapeCallback(windowWidth, windowHeight);
+				displayCallback();
+			}
 			break;
 	}
     glutPostRedisplay();
@@ -182,8 +223,6 @@ void renderBitMapCharacter(float x, float y, float z, void *font, string text, f
 	glPushMatrix();
 	glRasterPos3f(x, y, z);
 	glColor3f(r, g, b);
-	cout << "Text: " << text << endl;
-	cout << "Color: " << r << ", " << g << ", " << b << endl;
 
 	for (unsigned int i = 0; i < text.size(); i++) {
 		glutBitmapCharacter(font, text.at(i));
@@ -231,11 +270,11 @@ void showMainMenu(float x, float y, float z, float optionsSpacing){
     
     glBegin(GL_BITMAP);
 	if (selectedMenuOption == 0){
-    	renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Start game", 0.0, 1.0, 1.0);
-    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Start game", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 0.0, 1.0, 1.0);
 	} else if (selectedMenuOption == 1){
-		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 0.0, 1.0, 1.0);
-		renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Start game", 1.0, 1.0, 1.0);
+		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 1.0, 1.0, 1.0);
+		renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Start game", 0.0, 1.0, 1.0);
 	}
     glEnd();
     
