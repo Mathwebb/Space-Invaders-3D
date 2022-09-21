@@ -30,16 +30,20 @@
 	<AppType Value="CONSOLE"/>
 	<Files>
 		<File Name="main.cpp"/>
-		<Folder Name="assets"/>
+		<Folder Name="assets">
+			<Folder Name="models"/>
+			<Folder Name="sounds"/>
+		</Folder>
 		<Folder Name="game_classes">
-			<File Name="invader.h"/>
 			<File Name="Player.cpp"/>
 			<File Name="Object.cpp"/>
 			<File Name="Face.cpp"/>
 			<File Name="Vertex.cpp"/>
+			<File Name="Invader.cpp"/>
 		</Folder>
 		<Folder Name="libraries">
 			<File Name="object loader.h"/>
+			<File Name="2D menu renderers.h"/>
 		</Folder>
 	</Files>
 	<AppIcon>

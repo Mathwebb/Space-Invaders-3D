@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout>
 	<Files>
-		<File Name="main.cpp" Top="Yes" Tabpos="1" TopLine="221">
-			<Cursor Line="252" Column="1"/>
+		<File Name="main.cpp" Top="Yes" Tabpos="1" TopLine="25">
+			<Cursor Line="37" Column="22"/>
 		</File>
 		<File Name="libraries\object loader.h" Top="No" Tabpos="2" TopLine="1">
-			<Cursor Line="26" Column="1"/>
+			<Cursor Line="1" Column="1"/>
+		</File>
+		<File Name="game_classes\Face.cpp" Top="No" Tabpos="3" TopLine="1">
+			<Cursor Line="1" Column="1"/>
+		</File>
+		<File Name="game_classes\Object.cpp" Top="No" Tabpos="4" TopLine="1">
+			<Cursor Line="1" Column="1"/>
 		</File>
 	</Files>
 	<Folders>
+		<Folder Name="assets" Expanded="Yes"/>
 		<Folder Name="game_classes" Expanded="Yes"/>
+		<Folder Name="libraries" Expanded="Yes"/>
 	</Folders>
 </Layout>
