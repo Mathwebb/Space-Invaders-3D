@@ -35,15 +35,12 @@
 			<Folder Name="sounds"/>
 		</Folder>
 		<Folder Name="game_classes">
-			<File Name="Player.cpp"/>
-			<File Name="Object.cpp"/>
-			<File Name="Face.cpp"/>
-			<File Name="Vertex.cpp"/>
-			<File Name="Invader.cpp"/>
-		</Folder>
-		<Folder Name="libraries">
-			<File Name="object loader.h"/>
-			<File Name="2D menu renderers.h"/>
+			<File Name="Face.h"/>
+			<File Name="Invader.h"/>
+			<File Name="Object.h"/>
+			<File Name="Player.h"/>
+			<File Name="Projectile.h"/>
+			<File Name="Vertex.h"/>
 		</Folder>
 	</Files>
 	<AppIcon>
