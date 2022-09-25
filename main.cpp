@@ -106,7 +106,7 @@ void reshapeCallback(int w, int h){
 	
 	    gluPerspective(60, (float)w/(float)h, 1.0, 10000.0);
 	
-	    gluLookAt (level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY()+100, level.getPlayer()->getCoordinateZ()+350,
+	    gluLookAt (level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY()+200, level.getPlayer()->getCoordinateZ()+350,
 				   level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY(), level.getPlayer()->getCoordinateZ(),
 				   0.0, 1.0, 0.0);
 	

@@ -27,8 +27,8 @@ class Enemy{
             this->damagePoints = 10;
             this->movementSpeed = 10;
             this->movementDirection[0] = rand() % 3 - 1;
-            this->movementDirection[1] = rand() % 3 - 1;
-            this->movementDirection[2] = rand() % 2;
+            this->movementDirection[1] = 0;
+            this->movementDirection[2] = 1;
             this->isAlive = true;
             this->enemyObject = new Object(ENEMY, SPHERE, x, y, z, 25, 1, 0, 0);
         }
@@ -54,6 +54,26 @@ class Enemy{
             return this->damagePoints;
         }
 
+        float getMovementSpeed() {
+            return this->movementSpeed;
+        }
+
+        float getMovementDirectionX() {
+            return this->movementDirection[0];
+        }
+
+        float getMovementDirectionY() {
+            return this->movementDirection[1];
+        }
+
+        float getMovementDirectionZ() {
+            return this->movementDirection[2];
+        }
+
+        bool getIsAlive() {
+            return this->isAlive;
+        }
+
         Object *getEnemyObject() {
             return this->enemyObject;
         }
@@ -77,6 +97,22 @@ class Enemy{
 
         void setDamagePoints(float damagePoints) {
             this->damagePoints = damagePoints;
+        }
+
+        void setMovementSpeed(float movementSpeed) {
+            this->movementSpeed = movementSpeed;
+        }
+
+        void setMovementDirectionX(float x) {
+            this->movementDirection[0] = x;
+        }
+
+        void setMovementDirectionY(float y) {
+            this->movementDirection[1] = y;
+        }
+
+        void setMovementDirectionZ(float z) {
+            this->movementDirection[2] = z;
         }
 
         void setEnemyObject(Object *enemyObject) {

@@ -44,7 +44,7 @@ class Level{
             
             // Initialize 10 enemies on random positions
             for (int i = 0; i < 10; i++){
-                enemies.push_back(Enemy(rand()%(int)borderXMax, rand()%(int)borderYMax, 0));
+                enemies.push_back(Enemy(rand()%(int)borderXMax, rand()%(int)borderYMax, -900));
             }
         }
 
@@ -197,9 +197,34 @@ class Level{
         }
 
         void moveEnemies(){
+            bool allEnemiesDead = true;
             for (unsigned int i = 0; i < enemies.size(); i++){
-                cout << "Enemy " << i << " is moving" << endl;
+                if (this->enemies[i].getIsAlive()){
+                    allEnemiesDead = false;
+                }
+                if (this->enemies[i].getEnemyObject()->checkCollisionLeftBorder(this->borderXMin)){
+                    this->enemies[i].setMovementDirectionX(1);
+                }
+                if (this->enemies[i].getEnemyObject()->checkCollisionRightBorder(this->borderXMax)){
+                    this->enemies[i].setMovementDirectionX(-1);
+                }
+                if (this->enemies[i].getEnemyObject()->checkCollisionTopBorder(this->borderYMax)){
+                    this->enemies[i].setMovementDirectionY(-1*enemies[i].getMovementDirectionY());
+                }
+                if (this->enemies[i].getEnemyObject()->checkCollisionBottomBorder(this->borderYMin)){
+                    this->enemies[i].setMovementDirectionY(1*enemies[i].getMovementDirectionY());
+                }
+                if (this->enemies[i].getEnemyObject()->checkCollisionFrontBorder(this->borderZMax)){
+                    this->enemies[i].takeDamage(100);
+                }
+                if (this->enemies[i].getEnemyObject()->checkCollisionBackBorder(this->borderZMin)){
+                    this->enemies[i].setMovementDirectionZ(1);
+                }
                 enemies[i].moveEnemy();
+            }
+            if (allEnemiesDead){
+                this->enemiesLeft = 0;
+                enemies.clear();
             }
         }
 
