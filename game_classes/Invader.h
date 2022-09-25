@@ -559,8 +559,14 @@ class Enemy{
         }
 
         void takeDamage(float damagePoints) {
-            this->healthPoints -= damagePoints;
-        }
+			if (healthPoints - damagePoints <= 0) {
+				this->healthPoints = 0;
+				this->isAlive = false;
+			}
+			else {
+				this->healthPoints -= damagePoints;
+			}
+		}
 
         void render() {
             if (this->isAlive) {

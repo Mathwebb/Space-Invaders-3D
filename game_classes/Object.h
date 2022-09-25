@@ -140,33 +140,21 @@ class Object{
             this->z += z;
         }
 
-        void render(){
-            if (this->shape == CUBE){
-                glPushMatrix();
-                    glTranslatef(this->x, this->y, this->z);
-                    glColor3f(this->colorR, this->colorG, this->colorB);
-                    glutSolidCube(this->collisionRadius);
-                glPopMatrix();
-            } else if (this->shape == SPHERE){
-                glPushMatrix();
-                    glTranslatef(this->x, this->y, this->z);
-                    glColor3f(this->colorR, this->colorG, this->colorB);
-                    glutSolidSphere(this->collisionRadius, 20, 20);
-                glPopMatrix();
-            } else if (this->shape == CONE){
-                glPushMatrix();
-                    glTranslatef(this->x, this->y, this->z);
-                    glColor3f(this->colorR, this->colorG, this->colorB);
-                    glutSolidCone(this->collisionRadius/2, this->collisionRadius, 20, 20);
-                glPopMatrix();
-            } else if (this->shape == TORUS){
-                glPushMatrix();
-                    glTranslatef(this->x, this->y, this->z);
-                    glColor3f(this->colorR, this->colorG, this->colorB);
-                    glutSolidTorus(this->collisionRadius/2, this->collisionRadius, 20, 20);
-                glPopMatrix();
-            }
-        }
+		void render(){
+			glPushMatrix();
+				glTranslatef(this->x, this->y, this->z);
+				glColor3f(this->colorR, this->colorG, this->colorB);
+				if (this->shape == CUBE){
+					glutSolidCube(this->collisionRadius);
+				}else if (this->shape == SPHERE){
+					glutSolidSphere(this->collisionRadius, 20, 20);
+				}else if (this->shape == CONE){
+					glutSolidCone(this->collisionRadius/2, this->collisionRadius, 20, 20);
+				}else if (this->shape == TORUS){
+					glutSolidTorus(this->collisionRadius/2, this->collisionRadius, 20, 20);
+				}
+			glPopMatrix();	
+		}
 
         bool checkCollision(Object *object) {
             float distance = sqrt(pow(this->x - object->getCoordinateX(), 2) + pow(this->y - object->getCoordinateY(), 2) + pow(this->z - object->getCoordinateZ(), 2));
