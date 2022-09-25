@@ -41,6 +41,8 @@
 			<File Name="Player.h"/>
 			<File Name="Projectile.h"/>
 			<File Name="Vertex.h"/>
+			<File Name="Enemy.h"/>
+			<File Name="Level.h"/>
 		</Folder>
 	</Files>
 	<AppIcon>

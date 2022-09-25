@@ -7,24 +7,14 @@
 
 using namespace std;
 
-enum ObjectType{
-    PLAYER,
-    ENEMY,
-    PROJECTILE,
-    POWERUP
-};
+enum ObjectType{PLAYER, ENEMY, PROJECTILE, POWERUP};
 
-enum ObjectShape{
-    CUBE,
-    SPHERE,
-    CONE,
-    TORUS
-};
+enum ObjectShape{CUBE, SPHERE, CONE, TORUS};
 
 class Object{
     private:
-        int type;
-        int shape;
+        ObjectType type;
+        ObjectShape shape;
         float x, y, z;
         float colorR, colorG, colorB;
         float collisionRadius;
@@ -174,10 +164,43 @@ class Object{
             return false;
         }
 
-        bool checkCollision(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax) {
-            if (this->x + this->collisionRadius >= xMin && this->x - this->collisionRadius <= xMax
-                && this->y + this->collisionRadius >= yMin && this->y - this->collisionRadius <= yMax
-                && this->z + this->collisionRadius >= zMin && this->z - this->collisionRadius <= zMax) {
+        bool checkCollisionLeftBorder(float xMin){
+            if (this->x + this->collisionRadius <= xMin) {
+                return true;
+            }
+            return false;
+        }
+
+        bool checkCollisionRightBorder(float xMax){
+            if (this->x + this->collisionRadius >= xMax) {
+                return true;
+            }
+            return false;
+        }
+
+        bool checkCollisionTopBorder(float yMax){
+            if (this->y + this->collisionRadius >= yMax) {
+                return true;
+            }
+            return false;
+        }
+
+        bool checkCollisionBottomBorder(float yMin){
+            if (this->y + this->collisionRadius <= yMin) {
+                return true;
+            }
+            return false;
+        }
+
+        bool checkCollisionFrontBorder(float zMax){
+            if (this->z + this->collisionRadius >= zMax) {
+                return true;
+            }
+            return false;
+        }
+
+        bool checkCollisionBackBorder(float zMin){
+            if (this->z + this->collisionRadius <= zMin) {
                 return true;
             }
             return false;
