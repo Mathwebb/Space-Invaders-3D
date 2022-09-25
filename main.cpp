@@ -48,9 +48,6 @@ enum GameStates {
 };
 int windowWidth = 640, windowHeight = 480, angle = 0, selectedMenuOption = 0, gameState = 0;
 int actualLevel = 1;
-// vector<Object> sceneObjects;
-// Player player;
-// vector<Enemy> enemies;
 Level level;
 
 void initGlut(const char *nome_janela, int argc, char** argv);
@@ -82,12 +79,9 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 }
 
 void funcao(int n){
-	for(int i = 0 ; i < enemies.size() ; i++){
-		enemies[i].setCoordinateX(enemies[i].getCoordinateX()-2);
-		enemies[i].setCoordinateY(enemies[i].getCoordinateY()-2);
-	}
+	level.moveEnemies();
 	glutPostRedisplay();
-	glutTimerFunc(1000, funcao, 0);
+	glutTimerFunc(100, funcao, 0);
 }
 
 void reshapeCallback(int w, int h){
@@ -138,6 +132,12 @@ void displayCallback(void){
 		renderMainMenu(selectedMenuOption, -windowWidth/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if(gameState == GAME_RUNNING){
 		level.renderLevel();
+		if (!level.getPlayer()->getIsAlive()){
+			cout << "GAME OVER" << endl;
+			gameState = GAME_OVER;
+		}
+	} else if (gameState == GAME_OVER){
+		renderGameOver(selectedMenuOption, -windowWidth/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	}
 
     glutSwapBuffers();
@@ -172,13 +172,9 @@ void keyboardCallback(unsigned char key, int x, int y){
 				}
 			}
 			if (gameState == GAME_OVER){
-				enemies.clear();
 				if (selectedMenuOption == TRY_AGAIN){
 					gameState = GAME_RUNNING;
-					// Initialize 10 enemies on random positions
-					for (int i = 0; i < 10; i++){
-						enemies.push_back(Enemy((rand()%windowWidth)-(windowWidth/2), (rand()%windowHeight)-(windowHeight/2), 0));
-					}
+					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == GIVE_UP){
@@ -191,8 +187,8 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case SPACEBAR:
 			if (gameState == GAME_RUNNING){
 				//projectiles.push_back(Projectile(player.getCoordinateX(),player.getCoordinateY(), 0));
-				cout << player.getCoordinateX() << endl;
-				cout << player.getCoordinateY() << endl;
+				cout << "Player X: " << level.getPlayer()->getCoordinateX() << endl;
+				cout << "Player Y: " << level.getPlayer()->getCoordinateY() << endl;
 			}
 		case NUMBER_0:
 			if (gameState == MAIN_MENU || gameState == GAME_OVER){

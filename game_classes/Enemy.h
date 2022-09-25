@@ -5,11 +5,6 @@
 
 #include "Object.h"
 
-// Enemy types
-#define weakling 0
-#define soldier 1
-#define commander 2
-
 class Enemy{
     private:
         int type;
@@ -31,8 +26,8 @@ class Enemy{
             this->healthPoints = 100;
             this->damagePoints = 10;
             this->movementSpeed = 10;
-            this->movementDirection[0] = rand() % 2;
-            this->movementDirection[1] = rand() % 2;
+            this->movementDirection[0] = rand() % 3 - 1;
+            this->movementDirection[1] = rand() % 3 - 1;
             this->movementDirection[2] = rand() % 2;
             this->isAlive = true;
             this->enemyObject = new Object(ENEMY, SPHERE, x, y, z, 25, 1, 0, 0);

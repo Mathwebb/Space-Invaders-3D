@@ -39,8 +39,8 @@ class Level{
             this->borderXMax = 500;
             this->borderYMin = 0;
             this->borderYMax = 500;
-            this->borderZMin = 0;
-            this->borderZMax = 500;
+            this->borderZMin = -1000;
+            this->borderZMax = 0;
             
             // Initialize 10 enemies on random positions
             for (int i = 0; i < 10; i++){
@@ -166,8 +166,8 @@ class Level{
             for (unsigned int i = 0; i < enemies.size(); i++){
                 this->enemies[i].renderObject();
                 if (checkObjectsCollision(this->player->getPlayerObject(), this->enemies[i].getEnemyObject())){
-                    // this->player->takeDamage(this->enemies[i].getDamagePoints());
-                    // this->enemies[i].takeDamage(this->player->getDamagePoints());
+                    this->player->takeDamage(this->enemies[i].getDamagePoints());
+                    this->enemies[i].takeDamage(this->player->getDamagePoints());
                 }
             }
         }
@@ -200,6 +200,28 @@ class Level{
             for (unsigned int i = 0; i < enemies.size(); i++){
                 cout << "Enemy " << i << " is moving" << endl;
                 enemies[i].moveEnemy();
+            }
+        }
+
+        void clearEnemies(){
+            enemies.clear();
+        }
+
+        void resetLevel(){
+            this->levelNumber = 1;
+            this->maxSpawnedEnemies = 10;
+            this->initialSpawnedEnemies = 5;
+            this->enemiesSpawned = 0;
+            this->enemiesLeft = 0;
+            this->enemiesKilled = 0;
+            this->enemiesEscaped = 0;
+            this->enemySpawnRate = 1;
+            this->ObjectiveHealthPoints = 100;
+            this->player->resetPlayer();
+            this->clearEnemies();
+            // Initialize 10 enemies on random positions
+            for (int i = 0; i < 10; i++){
+                enemies.push_back(Enemy(rand()%(int)borderXMax, rand()%(int)borderYMax, 0));
             }
         }
 };
