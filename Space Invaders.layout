@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout>
 	<Files>
-		<File Name="main.cpp" Top="No" Tabpos="1" TopLine="1">
-			<Cursor Line="1" Column="1"/>
+		<File Name="game_classes\Player.h" Top="No" Tabpos="2" TopLine="1">
+			<Cursor Line="8" Column="11"/>
 		</File>
-		<File Name="game_classes\Object.h" Top="Yes" Tabpos="2" TopLine="1">
-			<Cursor Line="1" Column="1"/>
+		<File Name="game_classes\Object.h" Top="No" Tabpos="3" TopLine="1">
+			<Cursor Line="4" Column="13"/>
 		</File>
-		<File Name="game_classes\Invader.h" Top="No" Tabpos="3" TopLine="1">
-			<Cursor Line="1" Column="1"/>
+		<File Name="game_classes\Invader.h" Top="No" Tabpos="4" TopLine="40">
+			<Cursor Line="13" Column="9"/>
 		</File>
-		<File Name="game_classes\Player.h" Top="No" Tabpos="4" TopLine="1">
-			<Cursor Line="1" Column="1"/>
+		<File Name="game_classes\Projectile.h" Top="No" Tabpos="5" TopLine="1">
+			<Cursor Line="85" Column="21"/>
+		</File>
+		<File Name="main.cpp" Top="Yes" Tabpos="7" TopLine="76">
+			<Cursor Line="92" Column="36"/>
 		</File>
 	</Files>
 	<Folders>
