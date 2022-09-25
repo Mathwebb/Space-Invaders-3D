@@ -6,11 +6,9 @@
 #include <vector>
 
 #include "Object.h"
-#include "../game_functions/check collisions.h"
 
 class Player{
 	private:
-		float x, y, z;
 		float healthPoints, damagePoints, movementSpeed;
 		bool isAlive;
 		bool isInvulnerable;
@@ -18,28 +16,25 @@ class Player{
 	public:
 		// Constructors
 		Player(){
-			this->x = 0;
-			this->y = 0;
-			this->z = 0;
 			this->healthPoints = 100;
 			this->damagePoints = 10;
 			this->movementSpeed = 10;
 			this->isAlive = true;
 			this->isInvulnerable = false;
-			this->playerObject = new Object(PLAYER, CUBE, 0, 0, 0, 25, 0, 1, 1);
+			this->playerObject = new Object(PLAYER, CUBE, 30, 30, 0, 25, 0, 1, 1);
 		}
 
 		// Getters
 		float getCoordinateX() {
-			return this->x;
+			return this->playerObject->getCoordinateX();
 		}
 
 		float getCoordinateY() {
-			return this->y;
+			return this->playerObject->getCoordinateY();
 		}
 
 		float getCoordinateZ() {
-			return this->z;
+			return this->playerObject->getCoordinateZ();
 		}
 
 		float getHealthPoints() {
@@ -68,15 +63,15 @@ class Player{
 
 		// Setters
 		void setCoordinateX(float x) {
-			this->x = x;
+			this->playerObject->setCoordinateX(x);
 		}
 
 		void setCoordinateY(float y) {
-			this->y = y;
+			this->playerObject->setCoordinateY(y);
 		}
 
 		void setCoordinateZ(float z) {
-			this->z = z;
+			this->playerObject->setCoordinateZ(z);
 		}
 
 		void setHealthPoints(float healthPoints) {
@@ -105,35 +100,28 @@ class Player{
 
 		// Methods
 		void resetPlayer() {
-			this->x = 0;
-			this->y = 0;
-			this->z = 0;
 			this->healthPoints = 100;
 			this->damagePoints = 100;
 			this->movementSpeed = 10;
 			this->isAlive = true;
 			this->isInvulnerable = false;
-			this->playerObject = new Object();
+			this->playerObject = new Object(PLAYER, CUBE, 30, 30, 0, 25, 0, 1, 1);
 		}
 
 		void moveUp() {
-			this->y += this->movementSpeed;
-			this->playerObject->setCoordinateY(this->y);
+			this->playerObject->moveY(this->movementSpeed);
 		}
 
 		void moveDown() {
-			this->y -= this->movementSpeed;
-			this->playerObject->setCoordinateY(this->y);
+			this->playerObject->moveY(-this->movementSpeed);
 		}
 
 		void moveLeft() {
-			this->x -= this->movementSpeed;
-			this->playerObject->setCoordinateX(this->x);
+			this->playerObject->moveX(-this->movementSpeed);
 		}
 
 		void moveRight() {
-			this->x += this->movementSpeed;
-			this->playerObject->setCoordinateX(this->x);
+			this->playerObject->moveX(this->movementSpeed);
 		}
 
 		void takeDamage(float damagePoints) {
@@ -155,7 +143,7 @@ class Player{
 			}
 		}
 
-		void render() {
+		void renderObject() {
 			if (this->isAlive) {
 				this->playerObject->render();
 			}

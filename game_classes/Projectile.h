@@ -5,30 +5,22 @@
 
 class Projectile{
     private:
+        ObjectType type;
         float x, y, z;
         float damagePoints, movementSpeed;
         bool isAlive;
         Object *projectileObject;
     public:
         // Constructors
-        Projectile(){
-            this->x = 0;
-            this->y = 0;
-            this->z = 0;
-            this->damagePoints = 10;
-            this->movementSpeed = 10;
-            this->isAlive = true;
-            this->projectileObject = new Object();
-        }
-
-        Projectile(float x, float y, float z){
+        Projectile(ObjectType type, float x, float y, float z){
+            this->type = type;
             this->x = x;
             this->y = y;
             this->z = z;
             this->damagePoints = 10;
             this->movementSpeed = 10;
             this->isAlive = true;
-            this->projectileObject = new Object();
+            this->projectileObject = new Object(PROJECTILE, SPHERE, this->x, this->y, this->z, 10, 1, 1, 0);
         }
 
         // Getters
@@ -83,7 +75,11 @@ class Projectile{
 
         // Methods
         void moveProjectileX(float x) {
-            this->x += x;
+            if (this->type == PLAYER) {
+                this->x += x;
+            } else {
+                this->x -= x;
+            }
         }
 
         

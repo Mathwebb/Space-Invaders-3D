@@ -9,7 +9,9 @@
 
 #include "game_functions/renderers.h"
 #include "game_classes/Player.h"
-#include "game_classes/Invader.h"
+#include "game_classes/Enemy.h"
+#include "game_classes/Projectile.h"
+#include "game_classes/Level.h"
 
 using namespace std;
 
@@ -41,10 +43,11 @@ enum GameStates {
 	GAME_OVER
 };
 int windowWidth = 640, windowHeight = 480, angle = 0, selectedMenuOption = 0, gameState = 0;
-int actualLevel = 0;
-vector<Object> sceneObjects;
-Player player;
-vector<Enemy> enemies;
+int actualLevel = 1;
+// vector<Object> sceneObjects;
+// Player player;
+// vector<Enemy> enemies;
+Level level;
 
 void initGlut(const char *nome_janela, int argc, char** argv);
 void reshapeCallback(int w, int h);
@@ -94,8 +97,8 @@ void reshapeCallback(int w, int h){
 	
 	    gluPerspective(60, (float)w/(float)h, 1.0, 10000.0);
 	
-	    gluLookAt (player.getCoordinateX(), player.getCoordinateY()+40, player.getCoordinateZ()+500,
-				   player.getCoordinateX(), player.getCoordinateY(), player.getCoordinateZ(),
+	    gluLookAt (level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY()+100, level.getPlayer()->getCoordinateZ()+350,
+				   level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY(), level.getPlayer()->getCoordinateZ(),
 				   0.0, 1.0, 0.0);
 	
 	    glMatrixMode (GL_MODELVIEW);
@@ -109,16 +112,7 @@ void displayCallback(void){
     if (gameState == MAIN_MENU){
 		renderMainMenu(selectedMenuOption, -windowWidth/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if(gameState == GAME_RUNNING){
-		player.render();
-
-		bool hasCollided = false;
-		for (unsigned int i = 0; i < enemies.size(); i++){
-			enemies[i].render();
-			hasCollided = checkObjectsCollision(player.getPlayerObject(), enemies[i].getEnemyObject());
-			if (hasCollided){
-				cout << "Game Over!" << endl;
-			}
-		}
+		level.renderLevel();
 	}
 
     glutSwapBuffers();
@@ -146,10 +140,6 @@ void keyboardCallback(unsigned char key, int x, int y){
 			if (gameState == MAIN_MENU){
 				if (selectedMenuOption == START_GAME){
 					gameState = GAME_RUNNING;
-					// Initialize 10 enemies on random positions
-					for (int i = 0; i < 10; i++){
-						enemies.push_back(Enemy(rand()%windowWidth, rand()%windowHeight, 0));
-					}
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == EXIT){
@@ -181,7 +171,7 @@ void keyboardCallbackSpecial(int key, int x, int y){
 					displayCallback();
 				}
 			}else if (gameState == GAME_RUNNING){
-				player.moveUp();
+				level.movePlayerUp();
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
 			}
@@ -194,21 +184,21 @@ void keyboardCallbackSpecial(int key, int x, int y){
 					displayCallback();
 				}
 			}else if (gameState == GAME_RUNNING){
-				player.moveDown();
+				level.movePlayerDown();
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
 			}
 			break;
 		case GLUT_KEY_RIGHT:
 			if (gameState == GAME_RUNNING){
-				player.moveRight();
+				level.movePlayerRight();
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
 			}
 			break;
 		case GLUT_KEY_LEFT:
 			if (gameState == GAME_RUNNING){
-				player.moveLeft();
+				level.movePlayerLeft();
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
 			}
