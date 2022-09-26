@@ -10,26 +10,28 @@ class Enemy{
         int type;
         float healthPoints, damagePoints, movementSpeed;
         float movementDirection[3];
-        bool isAlive;
+        bool isAlive, alreadyShot;
         Object *enemyObject;
     public:
         // Constructors
         Enemy(){
             this->healthPoints = 100;
             this->damagePoints = 10;
-            this->movementSpeed = 10;
+            this->movementSpeed = 2;
             this->isAlive = true;
+            this->alreadyShot = false;
             this->enemyObject = new Object();
         }
 
         Enemy(float x, float y, float z){
             this->healthPoints = 100;
-            this->damagePoints = 10;
-            this->movementSpeed = 10;
+            this->damagePoints = 50;
+            this->movementSpeed = 2;
             this->movementDirection[0] = rand() % 3 - 1;
             this->movementDirection[1] = 0;
             this->movementDirection[2] = 1;
             this->isAlive = true;
+            this->alreadyShot = false;
             this->enemyObject = new Object(ENEMY, SPHERE, x, y, z, 25, 1, 0, 0);
         }
 
@@ -74,6 +76,10 @@ class Enemy{
             return this->isAlive;
         }
 
+        bool getAlreadyShot() {
+            return this->alreadyShot;
+        }
+
         Object *getEnemyObject() {
             return this->enemyObject;
         }
@@ -114,6 +120,10 @@ class Enemy{
         void setMovementDirectionZ(float z) {
             this->movementDirection[2] = z;
         }
+    
+        void setAlreadyShot(bool alreadyShot) {
+            this->alreadyShot = alreadyShot;
+        }
 
         void setEnemyObject(Object *enemyObject) {
             this->enemyObject = enemyObject;
@@ -133,6 +143,10 @@ class Enemy{
             } else {
                 this->healthPoints -= damagePoints;
             }
+        }
+
+        void Shoot() {
+            this->alreadyShot = true;
         }
 
         void renderObject() {

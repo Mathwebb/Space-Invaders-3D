@@ -3,37 +3,27 @@
 
 #include "../game_classes/Object.h"
 
+enum ProjectileOwner{PLAYER_PROJECTILE, ENEMY_PROJECTILE};
+
 class Projectile{
     private:
-        ObjectType type;
-        float x, y, z;
+        ProjectileOwner owner;
         float damagePoints, movementSpeed;
         bool isAlive;
         Object *projectileObject;
     public:
         // Constructors
-        Projectile(ObjectType type, float x, float y, float z){
-            this->type = type;
-            this->x = x;
-            this->y = y;
-            this->z = z;
-            this->damagePoints = 10;
-            this->movementSpeed = 10;
+        Projectile(ProjectileOwner owner, float x, float y, float z){
+            this->owner = owner;
+            this->damagePoints = 100;
+            this->movementSpeed = 12;
             this->isAlive = true;
-            this->projectileObject = new Object(PROJECTILE, SPHERE, this->x, this->y, this->z, 10, 1, 1, 0);
+            this->projectileObject = new Object(PROJECTILE, SPHERE, x, y, z, 10, 1, 1, 0);
         }
 
         // Getters
-        float getCoordinateX() {
-            return this->x;
-        }
-
-        float getCoordinateY() {
-            return this->y;
-        }
-
-        float getCoordinateZ() {
-            return this->z;
+        ProjectileOwner getOwner() {
+            return this->owner;
         }
 
         float getDamagePoints() {
@@ -48,19 +38,11 @@ class Projectile{
             return this->isAlive;
         }
 
+        Object *getProjectileObject() {
+            return this->projectileObject;
+        }
+
         // Setters
-        void setCoordinateX(float x) {
-            this->x = x;
-        }
-
-        void setCoordinateY(float y) {
-            this->y = y;
-        }
-
-        void setCoordinateZ(float z) {
-            this->z = z;
-        }
-
         void setDamagePoints(float damagePoints) {
             this->damagePoints = damagePoints;
         }
@@ -74,15 +56,19 @@ class Projectile{
         }
 
         // Methods
-        void moveProjectileX(float x) {
-            if (this->type == PLAYER) {
-                this->x += x;
-            } else {
-                this->x -= x;
+        void moveProjectile() {
+            if (this->owner == PLAYER_PROJECTILE) {
+                this->projectileObject->moveZ(- this->getMovementSpeed());
+            } else if (this->owner == ENEMY_PROJECTILE) {
+                this->projectileObject->moveZ(this->getMovementSpeed());
             }
         }
 
-        
+        void renderObject() {
+            if (this->isAlive) {
+            this->projectileObject->render();
+            }
+        }
 };
 
 #endif

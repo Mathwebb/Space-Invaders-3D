@@ -57,7 +57,7 @@ void keyboardCallback(unsigned char key, int x, int y);
 void keyboardCallbackSpecial(int key, int x, int y);
 void mouseCallback(int button, int state, int x, int y);
 void mousePassiveMotionCallback(int x, int y);
-void funcao(int n);
+void timerCallback(int n);
 
 void initGlut(const char *nome_janela, int argc, char** argv){
 
@@ -75,13 +75,14 @@ void initGlut(const char *nome_janela, int argc, char** argv){
     glutSpecialFunc(keyboardCallbackSpecial);
 	glutMouseFunc(mouseCallback);
 	glutPassiveMotionFunc(mousePassiveMotionCallback);
-	glutTimerFunc(1000, funcao, 0);
+	glutTimerFunc(1000, timerCallback, 0);
 }
 
-void funcao(int n){
+void timerCallback(int n){
 	level.moveEnemies();
+	level.moveProjectiles();
 	glutPostRedisplay();
-	glutTimerFunc(100, funcao, 0);
+	glutTimerFunc(100, timerCallback, 0);
 }
 
 void reshapeCallback(int w, int h){
@@ -133,11 +134,12 @@ void displayCallback(void){
 	} else if(gameState == GAME_RUNNING){
 		level.renderLevel();
 		if (!level.getPlayer()->getIsAlive()){
-			cout << "GAME OVER" << endl;
+			level.resetLevel();
 			gameState = GAME_OVER;
+			reshapeCallback(windowWidth, windowHeight);
 		}
 	} else if (gameState == GAME_OVER){
-		renderGameOver(selectedMenuOption, -windowWidth/2+windowWidth*0.1, 0.0, 0.0, 20.0);
+		renderGameOver(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	}
 
     glutSwapBuffers();
@@ -179,6 +181,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 					displayCallback();
 				} else if (selectedMenuOption == GIVE_UP){
 					gameState = MAIN_MENU;
+					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				}
@@ -186,6 +189,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 			break;
 		case SPACEBAR:
 			if (gameState == GAME_RUNNING){
+				level.playerShoot();
 				//projectiles.push_back(Projectile(player.getCoordinateX(),player.getCoordinateY(), 0));
 				cout << "Player X: " << level.getPlayer()->getCoordinateX() << endl;
 				cout << "Player Y: " << level.getPlayer()->getCoordinateY() << endl;

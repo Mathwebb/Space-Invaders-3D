@@ -40,7 +40,7 @@ class Level{
             this->borderYMin = 0;
             this->borderYMax = 500;
             this->borderZMin = -1000;
-            this->borderZMax = 0;
+            this->borderZMax = 100;
             
             // Initialize 10 enemies on random positions
             for (int i = 0; i < 10; i++){
@@ -163,11 +163,22 @@ class Level{
         void renderLevel(){
             this->player->renderObject();
 
+            for (unsigned int i = 0; i < this->projectiles.size(); i++){
+                this->projectiles[i].renderObject();
+                for (unsigned int j = 0; j < enemies.size(); j++){
+                    if (checkObjectsCollision(this->projectiles[i].getProjectileObject(), this->enemies[j].getEnemyObject())){
+                        this->projectiles.erase(this->projectiles.begin() + i);
+                        this->enemies.erase(this->enemies.begin() + j);
+                        this->enemiesKilled++;
+                    }
+                }
+            }
             for (unsigned int i = 0; i < enemies.size(); i++){
                 this->enemies[i].renderObject();
                 if (checkObjectsCollision(this->player->getPlayerObject(), this->enemies[i].getEnemyObject())){
                     this->player->takeDamage(this->enemies[i].getDamagePoints());
                     this->enemies[i].takeDamage(this->player->getDamagePoints());
+                    cout << "Player HP: " << this->player->getHealthPoints() << endl;
                 }
             }
         }
@@ -228,6 +239,20 @@ class Level{
             }
         }
 
+        void moveProjectiles(){
+            for (unsigned int i = 0; i < this->projectiles.size(); i++){
+                if (this->projectiles[i].getProjectileObject()->checkCollision(this->borderXMin, this->borderXMax,
+                                                                               this->borderYMin, this->borderYMax,
+                                                                               this->borderZMin, this->borderZMax)){
+                    this->projectiles.erase(this->projectiles.begin() + i);
+                }
+                else{
+                    this->projectiles[i].moveProjectile();
+                }
+                projectiles[i].moveProjectile();
+            }
+        }
+
         void clearEnemies(){
             enemies.clear();
         }
@@ -246,9 +271,14 @@ class Level{
             this->clearEnemies();
             // Initialize 10 enemies on random positions
             for (int i = 0; i < 10; i++){
-                enemies.push_back(Enemy(rand()%(int)borderXMax, rand()%(int)borderYMax, 0));
+                enemies.push_back(Enemy(rand()%(int)borderXMax, rand()%(int)borderYMax, -900));
             }
         }
-};
 
+        void playerShoot(){
+            Projectile projectile(PLAYER_PROJECTILE, this->player->getPlayerObject()->getCoordinateX(), this->player->getPlayerObject()->getCoordinateY(), this->player->getPlayerObject()->getCoordinateZ());
+            this->projectiles.push_back(projectile);
+            cout << "Player shoots" << endl;
+        }
+};
 #endif
