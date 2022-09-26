@@ -40,11 +40,16 @@ enum GameOverOptions {
 	TRY_AGAIN = 0,
 	GIVE_UP = 1
 };
+enum VictoryOptions {
+	PLAY_AGAIN = 0,
+	EXIT = 1
+};
 enum GameStates {
 	MAIN_MENU,
 	GAME_RUNNING,
 	GAME_PAUSED,
-	GAME_OVER
+	GAME_OVER,
+	VICTORY
 };
 int windowWidth = 640, windowHeight = 480, angle = 0, selectedMenuOption = 0, gameState = 0;
 int actualLevel = 1;
@@ -122,7 +127,17 @@ void reshapeCallback(int w, int h){
 		glOrtho(-(w/2), (w/2), -(h/2), h/2, -1, 1);
 		
 		glMatrixMode(GL_MODELVIEW);	
-	}
+	}else if (gameState == VICTORY){
+		glMatrixMode(GL_PROJECTION);
+	    glClearColor(0.0, 0.0, 0.0, 1.0);
+		glLoadIdentity();
+		
+		glViewport(0, 0, (GLsizei) w, (GLsizei) h);
+		
+		glOrtho(-(w/2), (w/2), -(h/2), h/2, -1, 1);
+		
+		glMatrixMode(GL_MODELVIEW);	
+	}	
 }
 
 void displayCallback(void){
@@ -140,6 +155,8 @@ void displayCallback(void){
 		}
 	} else if (gameState == GAME_OVER){
 		renderGameOver(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
+	} else if (gameState == VICTORY){
+		renderVictory(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	}
 
     glutSwapBuffers();
@@ -186,6 +203,19 @@ void keyboardCallback(unsigned char key, int x, int y){
 					displayCallback();
 				}
 			}
+			if (gameState == VICTORY){
+				if (selectedMenuOption == PLAY_AGAIN){
+					gameState = GAME_RUNNING;
+					level.resetLevel();
+					reshapeCallback(windowWidth, windowHeight);
+					displayCallback();
+				} else if (selectedMenuOption == EXIT){
+					gameState = MAIN_MENU;
+					level.resetLevel();
+					reshapeCallback(windowWidth, windowHeight);
+					displayCallback();
+				}
+			}
 			break;
 		case SPACEBAR:
 			if (gameState == GAME_RUNNING){
@@ -195,13 +225,13 @@ void keyboardCallback(unsigned char key, int x, int y){
 				cout << "Player Y: " << level.getPlayer()->getCoordinateY() << endl;
 			}
 		case NUMBER_0:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
 				selectedMenuOption = 0;
 				displayCallback();
 			}
 			break;
 		case NUMBER_1:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
 				selectedMenuOption = 1;
 				displayCallback();
 			}
@@ -212,7 +242,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 void keyboardCallbackSpecial(int key, int x, int y){
 	switch(key){
 		case GLUT_KEY_UP:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER ){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
 				if (selectedMenuOption > 0){
 					selectedMenuOption--;
 					displayCallback();
@@ -225,7 +255,7 @@ void keyboardCallbackSpecial(int key, int x, int y){
 			break;
 		
 		case GLUT_KEY_DOWN:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER ){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
 				if (selectedMenuOption < 1){
 					selectedMenuOption++;
 					displayCallback();

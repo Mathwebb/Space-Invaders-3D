@@ -68,6 +68,23 @@ void renderGameOver(int selectedMenuOption, float x, float y, float z, float opt
     glPopMatrix();
 }
 
+void renderVictory(int selectedMenuOption, float x, float y, float z, float optionsSpacing){
+	glPushMatrix();
+    
+    glBegin(GL_BITMAP);
+    renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, " Wow, congratulations!!! ", 1.0, 0.0, 0.0);
+	if (selectedMenuOption == 0){
+    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Play Again", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 0.0, 1.0, 1.0);
+	} else if (selectedMenuOption == 1){
+		renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 1.0, 1.0, 1.0);
+		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Play Again", 0.0, 1.0, 1.0);
+	}
+    glEnd();
+    
+    glPopMatrix();
+}
+
 void renderHUD(float x, float y, float z, float optionsSpacing, int score, int lives){
 }
 
