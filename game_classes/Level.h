@@ -9,11 +9,13 @@
 #include "Enemy.h"
 #include "../game_functions/check collisions.h"
 
-
 using namespace std;
+
+enum levelStatus{LEVEL_IN_PROGRESS, LEVEL_PAUSED, LEVEL_LOST, LEVEL_WON};
 
 class Level{
     private:
+        levelStatus status;
         int levelNumber;
         int maxSpawnedEnemies, initialSpawnedEnemies, enemiesSpawned, enemiesLeft, enemiesKilled, enemiesEscaped;
         float enemySpawnRate;
@@ -25,6 +27,7 @@ class Level{
     public:
         // Constructors
         Level(){
+            this->status = LEVEL_IN_PROGRESS;
             this->levelNumber = 1;
             this->maxSpawnedEnemies = 10;
             this->initialSpawnedEnemies = 5;
@@ -49,6 +52,10 @@ class Level{
         }
 
         //Getters
+        levelStatus getStatus() {
+            return this->status;
+        }
+
         int getLevelNumber(){
             return this->levelNumber;
         }
@@ -105,6 +112,10 @@ class Level{
         }
 
         // Setters
+        void setLevelStatus(levelStatus status) {
+            this->status = status;
+        }
+
         void setLevelNumber(int levelNumber){
             this->levelNumber = levelNumber;
         }
@@ -168,18 +179,28 @@ class Level{
                 for (unsigned int j = 0; j < enemies.size(); j++){
                     if (checkObjectsCollision(this->projectiles[i].getProjectileObject(), this->enemies[j].getEnemyObject())){
                         this->projectiles.erase(this->projectiles.begin() + i);
-                        this->enemies.erase(this->enemies.begin() + j);
-                        this->enemiesKilled++;
+                        this->enemies[j].takeDamage(this->projectiles[i].getDamagePoints());
+                        if (this->enemies[j].getIsAlive() == false){
+                            this->enemies.erase(this->enemies.begin() + j);
+                            this->enemiesKilled++;
+                        }
                     }
                 }
             }
+
             for (unsigned int i = 0; i < enemies.size(); i++){
                 this->enemies[i].renderObject();
                 if (checkObjectsCollision(this->player->getPlayerObject(), this->enemies[i].getEnemyObject())){
                     this->player->takeDamage(this->enemies[i].getDamagePoints());
                     this->enemies[i].takeDamage(this->player->getDamagePoints());
-                    cout << "Player HP: " << this->player->getHealthPoints() << endl;
                 }
+            }
+
+            if (this->ObjectiveHealthPoints <= 0 || this->player->getIsAlive() == false){
+                this->status = LEVEL_LOST;
+            }
+            if (this->enemies.size() == 0){
+                this->status = LEVEL_WON;
             }
         }
 
@@ -226,7 +247,9 @@ class Level{
                     this->enemies[i].setMovementDirectionY(1*enemies[i].getMovementDirectionY());
                 }
                 if (this->enemies[i].getEnemyObject()->checkCollisionFrontBorder(this->borderZMax)){
-                    this->enemies[i].takeDamage(100);
+                    this->enemies.erase(this->enemies.begin() + i);
+                    this->enemiesEscaped++;
+                    this->ObjectiveHealthPoints -= 50;
                 }
                 if (this->enemies[i].getEnemyObject()->checkCollisionBackBorder(this->borderZMin)){
                     this->enemies[i].setMovementDirectionZ(1);
@@ -258,6 +281,7 @@ class Level{
         }
 
         void resetLevel(){
+            this->status = LEVEL_IN_PROGRESS;
             this->levelNumber = 1;
             this->maxSpawnedEnemies = 10;
             this->initialSpawnedEnemies = 5;

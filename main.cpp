@@ -133,10 +133,14 @@ void displayCallback(void){
 		renderMainMenu(selectedMenuOption, -windowWidth/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if(gameState == GAME_RUNNING){
 		level.renderLevel();
-		if (!level.getPlayer()->getIsAlive()){
+		if (level.getStatus() == LEVEL_LOST){
 			level.resetLevel();
 			gameState = GAME_OVER;
 			reshapeCallback(windowWidth, windowHeight);
+		}
+		if (level.getStatus() == LEVEL_WON){
+			level.resetLevel();
+			gameState = MAIN_MENU;
 		}
 	} else if (gameState == GAME_OVER){
 		renderGameOver(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);

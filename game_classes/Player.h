@@ -21,7 +21,7 @@ class Player{
 			this->movementSpeed = 10;
 			this->isAlive = true;
 			this->isInvulnerable = false;
-			this->playerObject = new Object(PLAYER, CUBE, 30, 30, 0, 25, 0, 1, 1);
+			this->playerObject = new Object(PLAYER, CONE, 30, 30, 0, 25, 0, 1, 1);
 		}
 
 		// Getters
