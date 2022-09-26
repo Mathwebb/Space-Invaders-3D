@@ -16,7 +16,7 @@ class Projectile{
         Projectile(ProjectileOwner owner, float x, float y, float z){
             this->owner = owner;
             this->damagePoints = 100;
-            this->movementSpeed = 12;
+            this->movementSpeed = 20;
             this->isAlive = true;
             this->projectileObject = new Object(PROJECTILE, SPHERE, x, y, z, 10, 1, 1, 0);
         }

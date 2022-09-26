@@ -32,9 +32,9 @@ using namespace std;
 #define NUMBER_8 56
 #define NUMBER_9 57
 
-enum MainMenuOptions {
+enum MenuOptions {
 	START_GAME = 0,
-	EXIT = 1
+	MAIN_MENU_EXIT = 1
 };
 enum GameOverOptions {
 	TRY_AGAIN = 0,
@@ -42,7 +42,7 @@ enum GameOverOptions {
 };
 enum VictoryOptions {
 	PLAY_AGAIN = 0,
-	EXIT = 1
+	VICTORY_EXIT = 1
 };
 enum GameStates {
 	MAIN_MENU,
@@ -93,7 +93,7 @@ void timerCallback(int n){
 void reshapeCallback(int w, int h){
 	windowWidth = w;
 	windowHeight = h;
-    if (gameState == MAIN_MENU){
+    if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
 		glMatrixMode(GL_PROJECTION);
 	    glClearColor(0.0, 0.0, 0.0, 1.0);
 		glLoadIdentity();
@@ -112,32 +112,12 @@ void reshapeCallback(int w, int h){
 	
 	    gluPerspective(60, (float)w/(float)h, 1.0, 10000.0);
 	
-	    gluLookAt (level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY()+200, level.getPlayer()->getCoordinateZ()+350,
+	    gluLookAt (level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY()+60, level.getPlayer()->getCoordinateZ()+300,
 				   level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY(), level.getPlayer()->getCoordinateZ(),
 				   0.0, 1.0, 0.0);
 	
 	    glMatrixMode (GL_MODELVIEW);
-	} else if (gameState == GAME_OVER){
-		glMatrixMode(GL_PROJECTION);
-	    glClearColor(0.0, 0.0, 0.0, 1.0);
-		glLoadIdentity();
-		
-		glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-		
-		glOrtho(-(w/2), (w/2), -(h/2), h/2, -1, 1);
-		
-		glMatrixMode(GL_MODELVIEW);	
-	}else if (gameState == VICTORY){
-		glMatrixMode(GL_PROJECTION);
-	    glClearColor(0.0, 0.0, 0.0, 1.0);
-		glLoadIdentity();
-		
-		glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-		
-		glOrtho(-(w/2), (w/2), -(h/2), h/2, -1, 1);
-		
-		glMatrixMode(GL_MODELVIEW);	
-	}	
+	}
 }
 
 void displayCallback(void){
@@ -155,7 +135,8 @@ void displayCallback(void){
 		}
 		if (level.getStatus() == LEVEL_WON){
 			level.resetLevel();
-			gameState = MAIN_MENU;
+			gameState = VICTORY;
+			reshapeCallback(windowWidth, windowHeight);
 		}
 	} else if (gameState == GAME_OVER){
 		renderGameOver(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
@@ -190,7 +171,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 					gameState = GAME_RUNNING;
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
-				} else if (selectedMenuOption == EXIT){
+				} else if (selectedMenuOption == MAIN_MENU_EXIT){
 					exit(0);
 				}
 			}
@@ -213,7 +194,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
-				} else if (selectedMenuOption == EXIT){
+				} else if (selectedMenuOption == VICTORY_EXIT){
 					gameState = MAIN_MENU;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
