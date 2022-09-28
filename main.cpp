@@ -83,11 +83,25 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 	glutTimerFunc(1000, timerCallback, 0);
 }
 
+void spawnEnemyAtRandomPosition(int n){
+	level.spawnEnemy();
+}
+
+void resetPlayerShot(int n){
+	level.getPlayer()->resetShot();
+}
+
 void timerCallback(int n){
 	level.moveEnemies();
 	level.moveProjectiles();
 	glutPostRedisplay();
 	glutTimerFunc(100, timerCallback, 0);
+	if (gameState == GAME_RUNNING){
+		glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
+		cout << "Enemies: " << level.getEnemies().size() << endl;
+		glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
+		cout << "Projectiles: " << level.getProjectiles().size() << endl;
+	}
 }
 
 void reshapeCallback(int w, int h){
@@ -153,11 +167,9 @@ void mouseCallback(int button, int state, int x, int y){
 }
 
 void mouseMotionCallback(int x, int y){
-	
 }
 
 void mousePassiveMotionCallback(int x, int y){
-	
 }
 
 void keyboardCallback(unsigned char key, int x, int y){
@@ -169,6 +181,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 			if (gameState == MAIN_MENU){
 				if (selectedMenuOption == START_GAME){
 					gameState = GAME_RUNNING;
+					level.spawnInitialEnemies();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == MAIN_MENU_EXIT){
