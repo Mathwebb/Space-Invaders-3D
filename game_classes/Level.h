@@ -17,8 +17,9 @@ class Level{
     private:
         levelStatus status;
         int levelNumber;
-        int maxSpawnedEnemies, initialSpawnedEnemies, enemiesSpawned, enemiesLeft, enemiesKilled, enemiesEscaped;
-        float enemySpawnRate;
+        int maxEnemiesInLevel, maxSpawnedEnemies, initialSpawnedEnemies, enemiesAlreadySpawned;
+        float enemiesSpawnRateMiliseconds;
+        int enemiesLeft, enemiesKilled, enemiesEscaped;
         float ObjectiveHealthPoints;
         Player *player;
         vector<Enemy> enemies;
@@ -29,13 +30,14 @@ class Level{
         Level(){
             this->status = LEVEL_IN_PROGRESS;
             this->levelNumber = 1;
-            this->maxSpawnedEnemies = 10;
+            this->maxEnemiesInLevel = 8;
+            this->maxSpawnedEnemies = 20;
             this->initialSpawnedEnemies = 5;
-            this->enemiesSpawned = 0;
+            this->enemiesAlreadySpawned = 0;
             this->enemiesLeft = 0;
             this->enemiesKilled = 0;
             this->enemiesEscaped = 0;
-            this->enemySpawnRate = 1;
+            this->enemiesSpawnRateMiliseconds = 1000;
             this->ObjectiveHealthPoints = 100;
             this->player = new Player();
             this->borderXMin = -250;
@@ -44,11 +46,6 @@ class Level{
             this->borderYMax = 250;
             this->borderZMin = -1000;
             this->borderZMax = 100;
-            
-            // Initialize 10 enemies on random positions
-            for (int i = 0; i < 10; i++){
-                enemies.push_back(Enemy(rand()%(int)borderXMax*2 - borderXMax, rand()%(int)borderYMax*2 - borderYMax, -900));
-            }
         }
 
         //Getters
@@ -60,6 +57,10 @@ class Level{
             return this->levelNumber;
         }
 
+        int getMaxEnemiesInLevel(){
+            return this->maxEnemiesInLevel;
+        }
+
         int getMaxSpawnedEnemies(){
             return this->maxSpawnedEnemies;
         }
@@ -68,8 +69,8 @@ class Level{
             return this->initialSpawnedEnemies;
         }
 
-        int getEnemiesSpawned(){
-            return this->enemiesSpawned;
+        int getEnemiesAlreadySpawned(){
+            return this->enemiesAlreadySpawned;
         }
 
         int getEnemiesLeft(){
@@ -84,8 +85,8 @@ class Level{
             return this->enemiesEscaped;
         }
 
-        float getEnemySpawnRate(){
-            return this->enemySpawnRate;
+        float getEnemiesSpawnRateMiliseconds(){
+            return this->enemiesSpawnRateMiliseconds;
         }
 
         float getObjectiveHealthPoints(){
@@ -98,6 +99,10 @@ class Level{
 
         vector<Enemy> getEnemies(){
             return this->enemies;
+        }
+
+        vector<Projectile> getProjectiles(){
+            return this->projectiles;
         }
         
         vector<float> getLevelBorders(){
@@ -120,6 +125,10 @@ class Level{
             this->levelNumber = levelNumber;
         }
 
+        void setMaxEnemiesInLevel(int maxEnemiesInLevel){
+            this->maxEnemiesInLevel = maxEnemiesInLevel;
+        }
+
         void setMaxSpawnedEnemies(int maxSpawnedEnemies){
             this->maxSpawnedEnemies = maxSpawnedEnemies;
         }
@@ -128,8 +137,8 @@ class Level{
             this->initialSpawnedEnemies = initialSpawnedEnemies;
         }
 
-        void setEnemiesSpawned(int enemiesSpawned){
-            this->enemiesSpawned = enemiesSpawned;
+        void setEnemiesAlreadySpawned(int enemiesAlreadySpawned){
+            this->enemiesAlreadySpawned = enemiesAlreadySpawned;
         }
 
         void setEnemiesLeft(int enemiesLeft){
@@ -144,8 +153,8 @@ class Level{
             this->enemiesEscaped = enemiesEscaped;
         }
 
-        void setEnemySpawnRate(float enemySpawnRate){
-            this->enemySpawnRate = enemySpawnRate;
+        void setEnemiesSpawnRateMiliseconds(float enemiesSpawnRateMiliseconds){
+            this->enemiesSpawnRateMiliseconds = enemiesSpawnRateMiliseconds;
         }
 
         void setObjectiveHealthPoints(float ObjectiveHealthPoints){
@@ -182,6 +191,7 @@ class Level{
                         this->enemies[j].takeDamage(this->projectiles[i].getDamagePoints());
                         if (this->enemies[j].getIsAlive() == false){
                             this->enemies.erase(this->enemies.begin() + j);
+                            this->enemiesLeft--;
                             this->enemiesKilled++;
                         }
                     }
@@ -249,6 +259,7 @@ class Level{
                 if (this->enemies[i].getEnemyObject()->checkCollisionFrontBorder(this->borderZMax)){
                     this->enemies.erase(this->enemies.begin() + i);
                     this->enemiesEscaped++;
+                    this->enemiesLeft--;
                     this->ObjectiveHealthPoints -= 50;
                 }
                 if (this->enemies[i].getEnemyObject()->checkCollisionBackBorder(this->borderZMin)){
@@ -283,26 +294,42 @@ class Level{
         void resetLevel(){
             this->status = LEVEL_IN_PROGRESS;
             this->levelNumber = 1;
-            this->maxSpawnedEnemies = 10;
+            this->maxEnemiesInLevel = 10;
             this->initialSpawnedEnemies = 5;
-            this->enemiesSpawned = 0;
+            this->enemiesAlreadySpawned = 0;
             this->enemiesLeft = 0;
             this->enemiesKilled = 0;
             this->enemiesEscaped = 0;
-            this->enemySpawnRate = 1;
+            this->enemiesSpawnRateMiliseconds = 1;
             this->ObjectiveHealthPoints = 100;
             this->player->resetPlayer();
             this->clearEnemies();
-            // Initialize 10 enemies on random positions
-            for (int i = 0; i < 10; i++){
-                enemies.push_back(Enemy(rand()%(int)borderXMax*2 - borderXMax, rand()%(int)borderYMax*2 - borderYMax, -900));
-            }
+            this->spawnInitialEnemies();
         }
 
         void playerShoot(){
-            Projectile projectile(PLAYER_PROJECTILE, this->player->getPlayerObject()->getCoordinateX(), this->player->getPlayerObject()->getCoordinateY(), this->player->getPlayerObject()->getCoordinateZ());
-            this->projectiles.push_back(projectile);
-            cout << "Player shoots" << endl;
+            if (this->player->getIsAlive() && !this->player->getIsShooting()){
+                Projectile projectile(PLAYER_PROJECTILE, this->player->getPlayerObject()->getCoordinateX(), this->player->getPlayerObject()->getCoordinateY(), this->player->getPlayerObject()->getCoordinateZ());
+                this->projectiles.push_back(projectile);
+                player->setIsShooting(true);
+            }
+        }
+
+        void spawnInitialEnemies(){
+            if (this->enemiesAlreadySpawned < this->initialSpawnedEnemies){
+                for (int i = 0; i < initialSpawnedEnemies; i++){
+                    enemies.push_back(Enemy(rand()%(int)borderXMax*2 - borderXMax, rand()%(int)borderYMax*2 - borderYMax, -900));
+                    this->enemiesAlreadySpawned++;
+                }
+            }
+        }
+
+        void spawnEnemy(){
+            if (enemiesLeft <= maxEnemiesInLevel && enemiesAlreadySpawned <= maxSpawnedEnemies){
+                enemies.push_back(Enemy(rand()%(int)borderXMax*2 - borderXMax, rand()%(int)borderYMax*2 - borderYMax, -900));
+                this->enemiesLeft++;
+                this->enemiesAlreadySpawned++;
+            }
         }
 };
 #endif
