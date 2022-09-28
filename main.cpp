@@ -63,6 +63,8 @@ void keyboardCallbackSpecial(int key, int x, int y);
 void mouseCallback(int button, int state, int x, int y);
 void mousePassiveMotionCallback(int x, int y);
 void timerCallback(int n);
+void enableLighting();
+void disableLighting();
 
 void initGlut(const char *nome_janela, int argc, char** argv){
 
@@ -81,6 +83,22 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 	glutMouseFunc(mouseCallback);
 	glutPassiveMotionFunc(mousePassiveMotionCallback);
 	glutTimerFunc(1000, timerCallback, 0);
+	
+    GLfloat light_position[] = {0.0, 500.0, 0.0, 0.0};
+	GLfloat light_color[] = {1.0, 1.0, 1.0, 0.0};
+    glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, light_color);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+	
+	GLfloat mat_ambient_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_ambient_diffuse);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+	
+    glShadeModel(GL_SMOOTH);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
 }
 
 void spawnEnemyAtRandomPosition(int n){
@@ -109,6 +127,8 @@ void reshapeCallback(int w, int h){
 	windowHeight = h;
     if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
 		glMatrixMode(GL_PROJECTION);
+		disableLighting();
+
 	    glClearColor(0.0, 0.0, 0.0, 1.0);
 		glLoadIdentity();
 		
@@ -120,6 +140,8 @@ void reshapeCallback(int w, int h){
 	} else if (gameState == GAME_RUNNING){
 	    glMatrixMode (GL_PROJECTION);
 	    glClearColor(0.0, 0.0, 0.0, 1.0);
+		enableLighting();
+
 	    glLoadIdentity();
 	
 	    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
@@ -280,6 +302,18 @@ void keyboardCallbackSpecial(int key, int x, int y){
 			break;
 	}
     glutPostRedisplay();
+}
+
+void enableLighting(){
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_COLOR_MATERIAL);
+}
+
+void disableLighting(){
+	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0);
+	glDisable(GL_COLOR_MATERIAL);
 }
 
 int main(int argc, char* argv[]){
