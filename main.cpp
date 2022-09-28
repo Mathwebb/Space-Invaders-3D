@@ -167,11 +167,9 @@ void mouseCallback(int button, int state, int x, int y){
 }
 
 void mouseMotionCallback(int x, int y){
-	
 }
 
 void mousePassiveMotionCallback(int x, int y){
-	
 }
 
 void keyboardCallback(unsigned char key, int x, int y){
