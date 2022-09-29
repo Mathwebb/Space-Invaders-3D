@@ -62,6 +62,8 @@ void keyboardCallback(unsigned char key, int x, int y);
 void keyboardCallbackSpecial(int key, int x, int y);
 void mouseCallback(int button, int state, int x, int y);
 void mousePassiveMotionCallback(int x, int y);
+void spawnEnemyAtRandomPosition(int n);
+void resetPlayerShot(int n);
 void timerCallback(int n);
 void enableLighting();
 void disableLighting();
@@ -83,6 +85,8 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 	glutMouseFunc(mouseCallback);
 	glutPassiveMotionFunc(mousePassiveMotionCallback);
 	glutTimerFunc(1000, timerCallback, 0);
+	glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
+	glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
 	
     GLfloat light_position[] = {0.0, 500.0, 0.0, 0.0};
 	GLfloat light_color[] = {1.0, 1.0, 1.0, 0.0};
@@ -102,11 +106,17 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 }
 
 void spawnEnemyAtRandomPosition(int n){
-	level.spawnEnemy();
+	if (gameState == GAME_RUNNING){
+		level.spawnEnemy();
+	}
+	glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
 }
 
 void resetPlayerShot(int n){
-	level.getPlayer()->resetShot();
+	if (gameState == GAME_RUNNING){
+		level.getPlayer()->resetShot();
+	}
+	glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
 }
 
 void timerCallback(int n){
@@ -114,12 +124,6 @@ void timerCallback(int n){
 	level.moveProjectiles();
 	glutPostRedisplay();
 	glutTimerFunc(100, timerCallback, 0);
-	if (gameState == GAME_RUNNING){
-		glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
-		cout << "Enemies: " << level.getEnemies().size() << endl;
-		glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
-		cout << "Projectiles: " << level.getProjectiles().size() << endl;
-	}
 }
 
 void reshapeCallback(int w, int h){
