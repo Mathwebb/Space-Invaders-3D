@@ -7,6 +7,9 @@
 #include <vector>
 #include <fstream>
 
+#include <Windows.h>
+#include <MMSystem.h>
+
 #include "game_functions/renderers.h"
 #include "game_classes/Player.h"
 #include "game_classes/Enemy.h"
@@ -57,8 +60,8 @@ enum GameStates {
 	VICTORY
 };
 int windowWidth = 640, windowHeight = 480, angle = 0, selectedMenuOption = 0, gameState = 0;
-int actualLevel = 1;
-Level level(actualLevel);
+int actualLevel = 1, counterResetPlayerShot = 0, counterSpawnEnemy = 0;
+Level level;
 
 void initGlut(const char *nome_janela, int argc, char** argv);
 void reshapeCallback(int w, int h);
@@ -90,8 +93,6 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 	glutMouseFunc(mouseCallback);
 	glutPassiveMotionFunc(mousePassiveMotionCallback);
 	glutTimerFunc(1000, timerCallback, 0);
-	glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
-	glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
 	
     GLfloat light_position[] = {0.0, 500.0, 0.0, 0.0};
 	GLfloat light_color[] = {1.0, 1.0, 1.0, 0.0};
@@ -108,26 +109,35 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 	
     glShadeModel(GL_SMOOTH);
     glClearColor(1.0, 1.0, 1.0, 1.0);
+    sndPlaySound("musics/songMenu.wav", SND_ASYNC);
 }
 
 void spawnEnemyAtRandomPosition(int n){
 	if (gameState == GAME_RUNNING){
 		level.spawnEnemy();
 	}
-	glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
 }
 
 void resetPlayerShot(int n){
 	if (gameState == GAME_RUNNING){
 		level.getPlayer()->resetShot();
 	}
-	glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
 }
 
 void timerCallback(int n){
-	if(gameState != GAME_PAUSED){
+	if(gameState == GAME_RUNNING){
+		counterResetPlayerShot+=50;
+		counterSpawnEnemy+=50;
 		level.moveEnemies();
 		level.moveProjectiles();
+		if(counterResetPlayerShot>=level.getPlayer()->getShotCooldownMiliseconds()){
+			glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
+			counterResetPlayerShot=0;
+		}
+		if(counterSpawnEnemy>=level.getEnemiesSpawnRateMiliseconds()){
+			glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
+			counterSpawnEnemy=0;
+		}
 	}
 	glutPostRedisplay();
 	glutTimerFunc(100, timerCallback, 0);
@@ -216,10 +226,14 @@ void keyboardCallback(unsigned char key, int x, int y){
 	switch (key){
 		case ESCAPE:
 			if(gameState == GAME_RUNNING){
+				sndPlaySound(NULL, SND_ASYNC);
+				sndPlaySound("musics/songMenu.wav", SND_ASYNC);
 				gameState = GAME_PAUSED;
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
 			} else if(gameState == GAME_PAUSED){
+				sndPlaySound(NULL, SND_ASYNC);
+				sndPlaySound("musics/songGame.wav", SND_ASYNC);
 				gameState = GAME_RUNNING;
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
@@ -231,6 +245,8 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case ENTER:
 			if (gameState == MAIN_MENU){
 				if (selectedMenuOption == START_GAME){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("musics/songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
@@ -240,12 +256,17 @@ void keyboardCallback(unsigned char key, int x, int y){
 			}
 			if (gameState == GAME_OVER){
 				if (selectedMenuOption == TRY_AGAIN){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("musics/songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == GIVE_UP){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("musics/songMenu.wav", SND_ASYNC);
 					gameState = MAIN_MENU;
+					selectedMenuOption=0;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
@@ -253,12 +274,17 @@ void keyboardCallback(unsigned char key, int x, int y){
 			}
 			if (gameState == VICTORY){
 				if (selectedMenuOption == PLAY_AGAIN){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("musics/songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == VICTORY_EXIT){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("musics/songMenu.wav", SND_ASYNC);
 					gameState = MAIN_MENU;
+					selectedMenuOption=0;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
@@ -266,16 +292,23 @@ void keyboardCallback(unsigned char key, int x, int y){
 			}
 			if (gameState == GAME_PAUSED){
 				if (selectedMenuOption == CONTINUE){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("musics/songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == RESTART){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("musics/songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == MAIN_MENU_PAUSED){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("musics/songMenu.wav", SND_ASYNC);
 					gameState = MAIN_MENU;
+					selectedMenuOption=0;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
