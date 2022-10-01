@@ -191,7 +191,12 @@ void displayCallback(void){
 			reshapeCallback(windowWidth, windowHeight);
 		}
 		if (level.getStatus() == LEVEL_WON){
-			level.resetLevel();
+			actualLevel++;
+			if (actualLevel > 10){
+				actualLevel = 1;
+			}
+			level = Level(actualLevel);
+			cout << "Level " << actualLevel << endl;
 			gameState = VICTORY;
 			reshapeCallback(windowWidth, windowHeight);
 		}
@@ -243,7 +248,6 @@ void keyboardCallback(unsigned char key, int x, int y){
 					sndPlaySound(NULL, SND_ASYNC);
 					sndPlaySound("musics/songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
-					level.spawnInitialEnemies();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == MAIN_MENU_EXIT){
@@ -331,6 +335,11 @@ void keyboardCallback(unsigned char key, int x, int y){
 			if (gameState == GAME_PAUSED){
 				selectedMenuOption = 2;
 				displayCallback();
+			}
+			break;
+		case TAB:
+			if (gameState == GAME_RUNNING){
+				level.setLevelStatus(LEVEL_WON);
 			}
 			break;
 	}	
