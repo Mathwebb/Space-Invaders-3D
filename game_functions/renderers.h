@@ -24,9 +24,9 @@ void renderStrokeFontString(float x, float y, float z, void *font, string text) 
 }
 
 void renderBitMapCharacter(float x, float y, float z, void *font, string text, float r, float g, float b) {
-	glPushMatrix();
-	glRasterPos3f(x, y, z);
 	glColor3f(r, g, b);
+	glRasterPos3f(x, y, z);
+	glPushMatrix();
 
 	for (unsigned int i = 0; i < text.size(); i++) {
 		glutBitmapCharacter(font, text.at(i));
@@ -40,11 +40,11 @@ void renderMainMenu(int selectedMenuOption, float x, float y, float z, float opt
     
     glBegin(GL_BITMAP);
 	if (selectedMenuOption == 0){
-    	renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Start game", 1.0, 1.0, 1.0);
-    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 0.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Start game", 0.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 1.0, 1.0, 1.0);
 	} else if (selectedMenuOption == 1){
-		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 1.0, 1.0, 1.0);
-		renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Start game", 0.0, 1.0, 1.0);
+		renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Start game", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 0.0, 1.0, 1.0);
 	}
     glEnd();
     
@@ -57,11 +57,11 @@ void renderGameOver(int selectedMenuOption, float x, float y, float z, float opt
     glBegin(GL_BITMAP);
     renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, " You Lost :( ", 1.0, 0.0, 0.0);
 	if (selectedMenuOption == 0){
-    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Try Again", 1.0, 1.0, 1.0);
-    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Give Up", 0.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Try Again", 0.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Give Up", 1.0, 1.0, 1.0);
 	} else if (selectedMenuOption == 1){
-		renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Give Up", 1.0, 1.0, 1.0);
-		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Try Again", 0.0, 1.0, 1.0);
+		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Try Again", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Give Up", 0.0, 1.0, 1.0);
 	}
     glEnd();
     
@@ -74,11 +74,34 @@ void renderVictory(int selectedMenuOption, float x, float y, float z, float opti
     glBegin(GL_BITMAP);
     renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, " Wow, congratulations!!! ", 1.0, 0.0, 0.0);
 	if (selectedMenuOption == 0){
-    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Play Again", 1.0, 1.0, 1.0);
-    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 0.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Play Again", 0.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 1.0, 1.0, 1.0);
 	} else if (selectedMenuOption == 1){
-		renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 1.0, 1.0, 1.0);
-		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Play Again", 0.0, 1.0, 1.0);
+		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Play Again", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Exit", 0.0, 1.0, 1.0);
+	}
+    glEnd();
+    
+    glPopMatrix();
+}
+
+void renderPause(int selectedMenuOption, float x, float y, float z, float optionsSpacing){
+	glPushMatrix();
+    
+    glBegin(GL_BITMAP);
+    renderBitMapCharacter(x, y, z, GLUT_BITMAP_HELVETICA_18, " Game Paused ", 1.0, 0.0, 0.0);
+	if (selectedMenuOption == 0){
+    	renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Continue", 0.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Restart Level", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(3*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 2 ] - Main Menu", 1.0, 1.0, 1.0);
+	} else if (selectedMenuOption == 1){
+		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Continue", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Restart Level", 0.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(3*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 2 ] - Main Menu", 1.0, 1.0, 1.0);
+	} else if (selectedMenuOption == 2){
+		renderBitMapCharacter(x, y-optionsSpacing, z, GLUT_BITMAP_HELVETICA_18, "[ 0 ] - Continue", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(2*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 1 ] - Restart Level", 1.0, 1.0, 1.0);
+    	renderBitMapCharacter(x, y-(3*(optionsSpacing)), z, GLUT_BITMAP_HELVETICA_18, "[ 2 ] - Main Menu", 0.0, 1.0, 1.0);
 	}
     glEnd();
     

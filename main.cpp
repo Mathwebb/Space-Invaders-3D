@@ -44,6 +44,11 @@ enum VictoryOptions {
 	PLAY_AGAIN = 0,
 	VICTORY_EXIT = 1
 };
+enum PausedOptions {
+	CONTINUE = 0,
+	RESTART = 1,
+	MAIN_MENU_PAUSED = 2
+};
 enum GameStates {
 	MAIN_MENU,
 	GAME_RUNNING,
@@ -120,8 +125,10 @@ void resetPlayerShot(int n){
 }
 
 void timerCallback(int n){
-	level.moveEnemies();
-	level.moveProjectiles();
+	if(gameState != GAME_PAUSED){
+		level.moveEnemies();
+		level.moveProjectiles();
+	}
 	glutPostRedisplay();
 	glutTimerFunc(100, timerCallback, 0);
 }
@@ -129,7 +136,7 @@ void timerCallback(int n){
 void reshapeCallback(int w, int h){
 	windowWidth = w;
 	windowHeight = h;
-    if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
+    if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 		glMatrixMode(GL_PROJECTION);
 		disableLighting();
 
@@ -178,6 +185,8 @@ void displayCallback(void){
 			gameState = VICTORY;
 			reshapeCallback(windowWidth, windowHeight);
 		}
+	} else if (gameState == GAME_PAUSED){
+		renderPause(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if (gameState == GAME_OVER){
 		renderGameOver(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if (gameState == VICTORY){
@@ -201,7 +210,18 @@ void mousePassiveMotionCallback(int x, int y){
 void keyboardCallback(unsigned char key, int x, int y){
 	switch (key){
 		case ESCAPE:
-			exit(0);
+			if(gameState == GAME_RUNNING){
+				gameState = GAME_PAUSED;
+				reshapeCallback(windowWidth, windowHeight);
+				displayCallback();
+			} else if(gameState == GAME_PAUSED){
+				gameState = GAME_RUNNING;
+				reshapeCallback(windowWidth, windowHeight);
+				displayCallback();
+			}
+			else{
+				exit(0);
+			}
 			break;
 		case ENTER:
 			if (gameState == MAIN_MENU){
@@ -240,23 +260,43 @@ void keyboardCallback(unsigned char key, int x, int y){
 					displayCallback();
 				}
 			}
+			if (gameState == GAME_PAUSED){
+				if (selectedMenuOption == CONTINUE){
+					gameState = GAME_RUNNING;
+					reshapeCallback(windowWidth, windowHeight);
+					displayCallback();
+				} else if (selectedMenuOption == RESTART){
+					gameState = GAME_RUNNING;
+					level.resetLevel();
+					reshapeCallback(windowWidth, windowHeight);
+					displayCallback();
+				} else if (selectedMenuOption == MAIN_MENU_PAUSED){
+					gameState = MAIN_MENU;
+					level.resetLevel();
+					reshapeCallback(windowWidth, windowHeight);
+					displayCallback();
+				}
+			}
 			break;
 		case SPACEBAR:
 			if (gameState == GAME_RUNNING){
 				level.playerShoot();
-				//projectiles.push_back(Projectile(player.getCoordinateX(),player.getCoordinateY(), 0));
-				cout << "Player X: " << level.getPlayer()->getCoordinateX() << endl;
-				cout << "Player Y: " << level.getPlayer()->getCoordinateY() << endl;
 			}
 		case NUMBER_0:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 				selectedMenuOption = 0;
 				displayCallback();
 			}
 			break;
 		case NUMBER_1:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 				selectedMenuOption = 1;
+				displayCallback();
+			}
+			break;
+		case NUMBER_2:
+			if (gameState == GAME_PAUSED){
+				selectedMenuOption = 2;
 				displayCallback();
 			}
 			break;
@@ -266,9 +306,16 @@ void keyboardCallback(unsigned char key, int x, int y){
 void keyboardCallbackSpecial(int key, int x, int y){
 	switch(key){
 		case GLUT_KEY_UP:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 				if (selectedMenuOption > 0){
 					selectedMenuOption--;
+					displayCallback();
+				} else if(gameState == GAME_PAUSED){
+					selectedMenuOption=2;
+					displayCallback();
+				}
+				else {
+					selectedMenuOption=1;
 					displayCallback();
 				}
 			}else if (gameState == GAME_RUNNING){
@@ -282,6 +329,19 @@ void keyboardCallbackSpecial(int key, int x, int y){
 			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
 				if (selectedMenuOption < 1){
 					selectedMenuOption++;
+					displayCallback();
+				}
+				else {
+					selectedMenuOption=0;
+					displayCallback();
+				}
+			}else if (gameState == GAME_PAUSED){
+				if (selectedMenuOption < 2){
+					selectedMenuOption++;
+					displayCallback();
+				}
+				else {
+					selectedMenuOption=0;
 					displayCallback();
 				}
 			}else if (gameState == GAME_RUNNING){
