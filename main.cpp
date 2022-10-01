@@ -7,6 +7,9 @@
 #include <vector>
 #include <fstream>
 
+#include <Windows.h>
+#include <MMSystem.h>
+
 #include "game_functions/renderers.h"
 #include "game_classes/Player.h"
 #include "game_classes/Enemy.h"
@@ -108,6 +111,7 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 	
     glShadeModel(GL_SMOOTH);
     glClearColor(1.0, 1.0, 1.0, 1.0);
+    sndPlaySound("song.wav", SND_ASYNC);
 }
 
 void spawnEnemyAtRandomPosition(int n){
@@ -211,10 +215,14 @@ void keyboardCallback(unsigned char key, int x, int y){
 	switch (key){
 		case ESCAPE:
 			if(gameState == GAME_RUNNING){
+				sndPlaySound(NULL, SND_ASYNC);
+				sndPlaySound("song.wav", SND_ASYNC);
 				gameState = GAME_PAUSED;
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
 			} else if(gameState == GAME_PAUSED){
+				sndPlaySound(NULL, SND_ASYNC);
+				sndPlaySound("songGame.wav", SND_ASYNC);
 				gameState = GAME_RUNNING;
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
@@ -226,6 +234,8 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case ENTER:
 			if (gameState == MAIN_MENU){
 				if (selectedMenuOption == START_GAME){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.spawnInitialEnemies();
 					reshapeCallback(windowWidth, windowHeight);
@@ -236,11 +246,15 @@ void keyboardCallback(unsigned char key, int x, int y){
 			}
 			if (gameState == GAME_OVER){
 				if (selectedMenuOption == TRY_AGAIN){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == GIVE_UP){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("song.wav", SND_ASYNC);
 					gameState = MAIN_MENU;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
@@ -249,11 +263,15 @@ void keyboardCallback(unsigned char key, int x, int y){
 			}
 			if (gameState == VICTORY){
 				if (selectedMenuOption == PLAY_AGAIN){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == VICTORY_EXIT){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("song.wav", SND_ASYNC);
 					gameState = MAIN_MENU;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
@@ -262,15 +280,21 @@ void keyboardCallback(unsigned char key, int x, int y){
 			}
 			if (gameState == GAME_PAUSED){
 				if (selectedMenuOption == CONTINUE){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == RESTART){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("songGame.wav", SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == MAIN_MENU_PAUSED){
+					sndPlaySound(NULL, SND_ASYNC);
+					sndPlaySound("song.wav", SND_ASYNC);
 					gameState = MAIN_MENU;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
