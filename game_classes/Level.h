@@ -318,15 +318,14 @@ class Level{
         void spawnInitialEnemies(){
             if (this->enemiesAlreadySpawned < this->initialSpawnedEnemies){
                 for (int i = 0; i < initialSpawnedEnemies; i++){
-                    enemies.push_back(Enemy(rand()%(int)borderXMax*2 - borderXMax, rand()%(int)borderYMax*2 - borderYMax, -900));
-                    this->enemiesAlreadySpawned++;
+                    spawnEnemy();
                 }
             }
         }
 
         void spawnEnemy(){
             if (enemiesLeft <= maxEnemiesInLevel && enemiesAlreadySpawned <= maxSpawnedEnemies){
-                enemies.push_back(Enemy(rand()%(int)borderXMax*2 - borderXMax, rand()%(int)borderYMax*2 - borderYMax, -900));
+                enemies.push_back(Enemy((rand()%(int)borderXMax*2) - borderXMax, (rand()%(int)borderYMax*2) - borderYMax, -900));
                 this->enemiesLeft++;
                 this->enemiesAlreadySpawned++;
             }
