@@ -46,6 +46,51 @@ class Level{
             this->borderYMax = 250;
             this->borderZMin = -1000;
             this->borderZMax = 100;
+            this->spawnInitialEnemies();
+        }
+
+        Level(int levelNumber){
+            this->status = LEVEL_IN_PROGRESS;
+            this->levelNumber = levelNumber;
+            this->maxEnemiesInLevel = 10;
+            this->maxSpawnedEnemies = 20+20*levelNumber*0.05;
+            this->initialSpawnedEnemies = 5+5*levelNumber*0.2;
+            this->enemiesAlreadySpawned = 0;
+            this->enemiesLeft = 0;
+            this->enemiesKilled = 0;
+            this->enemiesEscaped = 0;
+            this->enemiesSpawnRateMiliseconds = 1000;
+            this->ObjectiveHealthPoints = 100;
+            this->player = new Player();
+            this->borderXMin = -250;
+            this->borderXMax = 250;
+            this->borderYMin = -250;
+            this->borderYMax = 250;
+            this->borderZMin = -1000;
+            this->borderZMax = 100;
+            this->spawnInitialEnemies();
+        }
+
+        Level(int levelNumber, int borderXMin, int borderXMax, int borderYMin, int borderYMax, int borderZMin, int borderZMax){
+            this->status = LEVEL_IN_PROGRESS;
+            this->levelNumber = levelNumber;
+            this->maxEnemiesInLevel = 6+floor(0.5*levelNumber);
+            this->maxSpawnedEnemies = 10+1*levelNumber;
+            this->initialSpawnedEnemies = 5+1*levelNumber;
+            this->enemiesAlreadySpawned = 0;
+            this->enemiesLeft = 0;
+            this->enemiesKilled = 0;
+            this->enemiesEscaped = 0;
+            this->enemiesSpawnRateMiliseconds = 1000;
+            this->ObjectiveHealthPoints = 100;
+            this->player = new Player();
+            this->borderXMin = borderXMin;
+            this->borderXMax = borderXMax;
+            this->borderYMin = borderYMin;
+            this->borderYMax = borderYMax;
+            this->borderZMin = borderZMin;
+            this->borderZMax = borderZMax;
+            this->spawnInitialEnemies();
         }
 
         //Getters
@@ -260,7 +305,7 @@ class Level{
                     this->enemies.erase(this->enemies.begin() + i);
                     this->enemiesEscaped++;
                     this->enemiesLeft--;
-                    this->ObjectiveHealthPoints -= 50;
+                    this->ObjectiveHealthPoints -= this->enemies[i].getDamagePoints() * 3;
                 }
                 if (this->enemies[i].getEnemyObject()->checkCollisionBackBorder(this->borderZMin)){
                     this->enemies[i].setMovementDirectionZ(1);

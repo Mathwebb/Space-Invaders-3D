@@ -8,7 +8,7 @@
 class Enemy{
     private:
         int type;
-        float healthPoints, damagePoints, movementSpeed;
+        float healthPoints, damagePoints, movementSpeed, shotCooldownMiliseconds;
         float movementDirection[3];
         bool isAlive, alreadyShot;
         Object *enemyObject;
@@ -25,7 +25,7 @@ class Enemy{
 
         Enemy(float x, float y, float z){
             this->healthPoints = 100;
-            this->damagePoints = 50;
+            this->damagePoints = 10;
             this->movementSpeed = 2;
             this->movementDirection[0] = rand() % 3 - 1;
             this->movementDirection[1] = 0;

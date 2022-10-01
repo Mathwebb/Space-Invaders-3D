@@ -58,7 +58,7 @@ enum GameStates {
 };
 int windowWidth = 640, windowHeight = 480, angle = 0, selectedMenuOption = 0, gameState = 0;
 int actualLevel = 1;
-Level level;
+Level level(actualLevel);
 
 void initGlut(const char *nome_janela, int argc, char** argv);
 void reshapeCallback(int w, int h);
@@ -181,7 +181,12 @@ void displayCallback(void){
 			reshapeCallback(windowWidth, windowHeight);
 		}
 		if (level.getStatus() == LEVEL_WON){
-			level.resetLevel();
+			actualLevel++;
+			if (actualLevel > 10){
+				actualLevel = 1;
+			}
+			level = Level(actualLevel);
+			cout << "Level " << actualLevel << endl;
 			gameState = VICTORY;
 			reshapeCallback(windowWidth, windowHeight);
 		}
@@ -227,7 +232,6 @@ void keyboardCallback(unsigned char key, int x, int y){
 			if (gameState == MAIN_MENU){
 				if (selectedMenuOption == START_GAME){
 					gameState = GAME_RUNNING;
-					level.spawnInitialEnemies();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == MAIN_MENU_EXIT){
@@ -298,6 +302,11 @@ void keyboardCallback(unsigned char key, int x, int y){
 			if (gameState == GAME_PAUSED){
 				selectedMenuOption = 2;
 				displayCallback();
+			}
+			break;
+		case TAB:
+			if (gameState == GAME_RUNNING){
+				level.setLevelStatus(LEVEL_WON);
 			}
 			break;
 	}	
