@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout>
 	<Files>
-		<File Name="game_classes\Player.h" Top="No" Tabpos="1" TopLine="73">
+		<File Name="game_classes\Object.h" Top="No" Tabpos="1" TopLine="1">
 			<Cursor Line="1" Column="1"/>
 		</File>
-		<File Name="main.cpp" Top="No" Tabpos="2" TopLine="144">
-			<Cursor Line="130" Column="16"/>
+		<File Name="game_classes\Player.h" Top="No" Tabpos="2" TopLine="1">
+			<Cursor Line="1" Column="1"/>
 		</File>
-		<File Name="game_classes\Object.h" Top="No" Tabpos="3" TopLine="126">
-			<Cursor Line="145" Column="21"/>
+		<File Name="main.cpp" Top="Yes" Tabpos="3" TopLine="1">
+			<Cursor Line="1" Column="1"/>
 		</File>
 		<File Name="game_classes\Projectile.h" Top="No" Tabpos="4" TopLine="1">
-			<Cursor Line="21" Column="67"/>
-			<Selection Line="21" Column="61"/>
+			<Cursor Line="1" Column="1"/>
 		</File>
-		<File Name="game_classes\Level.h" Top="No" Tabpos="5" TopLine="34">
-			<Cursor Line="50" Column="1"/>
+		<File Name="game_classes\Level.h" Top="No" Tabpos="5" TopLine="1">
+			<Cursor Line="1" Column="1"/>
 		</File>
-		<File Name="game_functions\renderers.h" Top="Yes" Tabpos="6" TopLine="43">
-			<Cursor Line="64" Column="46"/>
+		<File Name="game_functions\renderers.h" Top="No" Tabpos="6" TopLine="1">
+			<Cursor Line="1" Column="1"/>
 		</File>
 	</Files>
 	<Folders>
