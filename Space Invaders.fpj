@@ -44,6 +44,10 @@
 			<File Name="Enemy.h"/>
 			<File Name="Level.h"/>
 		</Folder>
+		<Folder Name="game_functions">
+			<File Name="renderers.h"/>
+			<File Name="check collisions.h"/>
+		</Folder>
 	</Files>
 	<AppIcon>
 		0000010001003030000001002000A82500001600000028000000300000006000

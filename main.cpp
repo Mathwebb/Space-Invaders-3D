@@ -32,9 +32,9 @@ using namespace std;
 #define NUMBER_8 56
 #define NUMBER_9 57
 
-enum MainMenuOptions {
+enum MenuOptions {
 	START_GAME = 0,
-	EXIT = 1
+	MAIN_MENU_EXIT = 1
 };
 enum GameOverOptions {
 	TRY_AGAIN = 0,
@@ -42,7 +42,12 @@ enum GameOverOptions {
 };
 enum VictoryOptions {
 	PLAY_AGAIN = 0,
-	EXIT = 1
+	VICTORY_EXIT = 1
+};
+enum PausedOptions {
+	CONTINUE = 0,
+	RESTART = 1,
+	MAIN_MENU_PAUSED = 2
 };
 enum GameStates {
 	MAIN_MENU,
@@ -62,7 +67,11 @@ void keyboardCallback(unsigned char key, int x, int y);
 void keyboardCallbackSpecial(int key, int x, int y);
 void mouseCallback(int button, int state, int x, int y);
 void mousePassiveMotionCallback(int x, int y);
+void spawnEnemyAtRandomPosition(int n);
+void resetPlayerShot(int n);
 void timerCallback(int n);
+void enableLighting();
+void disableLighting();
 
 void initGlut(const char *nome_janela, int argc, char** argv){
 
@@ -81,11 +90,45 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 	glutMouseFunc(mouseCallback);
 	glutPassiveMotionFunc(mousePassiveMotionCallback);
 	glutTimerFunc(1000, timerCallback, 0);
+	glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
+	glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
+	
+    GLfloat light_position[] = {0.0, 500.0, 0.0, 0.0};
+	GLfloat light_color[] = {1.0, 1.0, 1.0, 0.0};
+    glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, light_color);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+	
+	GLfloat mat_ambient_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_ambient_diffuse);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+	
+    glShadeModel(GL_SMOOTH);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+}
+
+void spawnEnemyAtRandomPosition(int n){
+	if (gameState == GAME_RUNNING){
+		level.spawnEnemy();
+	}
+	glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
+}
+
+void resetPlayerShot(int n){
+	if (gameState == GAME_RUNNING){
+		level.getPlayer()->resetShot();
+	}
+	glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
 }
 
 void timerCallback(int n){
-	level.moveEnemies();
-	level.moveProjectiles();
+	if(gameState != GAME_PAUSED){
+		level.moveEnemies();
+		level.moveProjectiles();
+	}
 	glutPostRedisplay();
 	glutTimerFunc(100, timerCallback, 0);
 }
@@ -93,8 +136,10 @@ void timerCallback(int n){
 void reshapeCallback(int w, int h){
 	windowWidth = w;
 	windowHeight = h;
-    if (gameState == MAIN_MENU){
+    if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 		glMatrixMode(GL_PROJECTION);
+		disableLighting();
+
 	    glClearColor(0.0, 0.0, 0.0, 1.0);
 		glLoadIdentity();
 		
@@ -106,38 +151,20 @@ void reshapeCallback(int w, int h){
 	} else if (gameState == GAME_RUNNING){
 	    glMatrixMode (GL_PROJECTION);
 	    glClearColor(0.0, 0.0, 0.0, 1.0);
+		enableLighting();
+
 	    glLoadIdentity();
 	
 	    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
 	
 	    gluPerspective(60, (float)w/(float)h, 1.0, 10000.0);
 	
-	    gluLookAt (level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY()+200, level.getPlayer()->getCoordinateZ()+350,
+	    gluLookAt (level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY()+60, level.getPlayer()->getCoordinateZ()+300,
 				   level.getPlayer()->getCoordinateX(), level.getPlayer()->getCoordinateY(), level.getPlayer()->getCoordinateZ(),
 				   0.0, 1.0, 0.0);
 	
 	    glMatrixMode (GL_MODELVIEW);
-	} else if (gameState == GAME_OVER){
-		glMatrixMode(GL_PROJECTION);
-	    glClearColor(0.0, 0.0, 0.0, 1.0);
-		glLoadIdentity();
-		
-		glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-		
-		glOrtho(-(w/2), (w/2), -(h/2), h/2, -1, 1);
-		
-		glMatrixMode(GL_MODELVIEW);	
-	}else if (gameState == VICTORY){
-		glMatrixMode(GL_PROJECTION);
-	    glClearColor(0.0, 0.0, 0.0, 1.0);
-		glLoadIdentity();
-		
-		glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-		
-		glOrtho(-(w/2), (w/2), -(h/2), h/2, -1, 1);
-		
-		glMatrixMode(GL_MODELVIEW);	
-	}	
+	}
 }
 
 void displayCallback(void){
@@ -148,11 +175,18 @@ void displayCallback(void){
 		renderMainMenu(selectedMenuOption, -windowWidth/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if(gameState == GAME_RUNNING){
 		level.renderLevel();
-		if (!level.getPlayer()->getIsAlive()){
+		if (level.getStatus() == LEVEL_LOST){
 			level.resetLevel();
 			gameState = GAME_OVER;
 			reshapeCallback(windowWidth, windowHeight);
 		}
+		if (level.getStatus() == LEVEL_WON){
+			level.resetLevel();
+			gameState = VICTORY;
+			reshapeCallback(windowWidth, windowHeight);
+		}
+	} else if (gameState == GAME_PAUSED){
+		renderPause(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if (gameState == GAME_OVER){
 		renderGameOver(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if (gameState == VICTORY){
@@ -168,25 +202,35 @@ void mouseCallback(int button, int state, int x, int y){
 }
 
 void mouseMotionCallback(int x, int y){
-	
 }
 
 void mousePassiveMotionCallback(int x, int y){
-	
 }
 
 void keyboardCallback(unsigned char key, int x, int y){
 	switch (key){
 		case ESCAPE:
-			exit(0);
+			if(gameState == GAME_RUNNING){
+				gameState = GAME_PAUSED;
+				reshapeCallback(windowWidth, windowHeight);
+				displayCallback();
+			} else if(gameState == GAME_PAUSED){
+				gameState = GAME_RUNNING;
+				reshapeCallback(windowWidth, windowHeight);
+				displayCallback();
+			}
+			else{
+				exit(0);
+			}
 			break;
 		case ENTER:
 			if (gameState == MAIN_MENU){
 				if (selectedMenuOption == START_GAME){
 					gameState = GAME_RUNNING;
+					level.spawnInitialEnemies();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
-				} else if (selectedMenuOption == EXIT){
+				} else if (selectedMenuOption == MAIN_MENU_EXIT){
 					exit(0);
 				}
 			}
@@ -209,7 +253,24 @@ void keyboardCallback(unsigned char key, int x, int y){
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
-				} else if (selectedMenuOption == EXIT){
+				} else if (selectedMenuOption == VICTORY_EXIT){
+					gameState = MAIN_MENU;
+					level.resetLevel();
+					reshapeCallback(windowWidth, windowHeight);
+					displayCallback();
+				}
+			}
+			if (gameState == GAME_PAUSED){
+				if (selectedMenuOption == CONTINUE){
+					gameState = GAME_RUNNING;
+					reshapeCallback(windowWidth, windowHeight);
+					displayCallback();
+				} else if (selectedMenuOption == RESTART){
+					gameState = GAME_RUNNING;
+					level.resetLevel();
+					reshapeCallback(windowWidth, windowHeight);
+					displayCallback();
+				} else if (selectedMenuOption == MAIN_MENU_PAUSED){
 					gameState = MAIN_MENU;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
@@ -220,19 +281,22 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case SPACEBAR:
 			if (gameState == GAME_RUNNING){
 				level.playerShoot();
-				//projectiles.push_back(Projectile(player.getCoordinateX(),player.getCoordinateY(), 0));
-				cout << "Player X: " << level.getPlayer()->getCoordinateX() << endl;
-				cout << "Player Y: " << level.getPlayer()->getCoordinateY() << endl;
 			}
 		case NUMBER_0:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 				selectedMenuOption = 0;
 				displayCallback();
 			}
 			break;
 		case NUMBER_1:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 				selectedMenuOption = 1;
+				displayCallback();
+			}
+			break;
+		case NUMBER_2:
+			if (gameState == GAME_PAUSED){
+				selectedMenuOption = 2;
 				displayCallback();
 			}
 			break;
@@ -242,9 +306,16 @@ void keyboardCallback(unsigned char key, int x, int y){
 void keyboardCallbackSpecial(int key, int x, int y){
 	switch(key){
 		case GLUT_KEY_UP:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 				if (selectedMenuOption > 0){
 					selectedMenuOption--;
+					displayCallback();
+				} else if(gameState == GAME_PAUSED){
+					selectedMenuOption=2;
+					displayCallback();
+				}
+				else {
+					selectedMenuOption=1;
 					displayCallback();
 				}
 			}else if (gameState == GAME_RUNNING){
@@ -258,6 +329,19 @@ void keyboardCallbackSpecial(int key, int x, int y){
 			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
 				if (selectedMenuOption < 1){
 					selectedMenuOption++;
+					displayCallback();
+				}
+				else {
+					selectedMenuOption=0;
+					displayCallback();
+				}
+			}else if (gameState == GAME_PAUSED){
+				if (selectedMenuOption < 2){
+					selectedMenuOption++;
+					displayCallback();
+				}
+				else {
+					selectedMenuOption=0;
 					displayCallback();
 				}
 			}else if (gameState == GAME_RUNNING){
@@ -282,6 +366,18 @@ void keyboardCallbackSpecial(int key, int x, int y){
 			break;
 	}
     glutPostRedisplay();
+}
+
+void enableLighting(){
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_COLOR_MATERIAL);
+}
+
+void disableLighting(){
+	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0);
+	glDisable(GL_COLOR_MATERIAL);
 }
 
 int main(int argc, char* argv[]){

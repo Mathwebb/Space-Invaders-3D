@@ -158,9 +158,6 @@ class Object{
 
         bool checkCollision(Object *object) {
             float distance = sqrt(pow(this->x - object->getCoordinateX(), 2) + pow(this->y - object->getCoordinateY(), 2) + pow(this->z - object->getCoordinateZ(), 2));
-            if (this->type == PROJECTILE){
-                cout << "Distance: " << distance << endl;
-            }
             if (distance <= this->collisionRadius + object->getCollisionRadius()) {
                 return true;
             }

@@ -10,8 +10,8 @@
 class Player{
 	private:
 		float healthPoints, damagePoints, movementSpeed;
-		bool isAlive;
-		bool isInvulnerable;
+		float shotCooldownMiliseconds, invulnerabilityTimeMiliseconds;
+		bool isAlive, isInvulnerable, isShooting;
 		Object *playerObject;
 	public:
 		// Constructors
@@ -19,9 +19,12 @@ class Player{
 			this->healthPoints = 100;
 			this->damagePoints = 10;
 			this->movementSpeed = 10;
+			this->shotCooldownMiliseconds = 1000;
+			this->invulnerabilityTimeMiliseconds = 0;
 			this->isAlive = true;
 			this->isInvulnerable = false;
-			this->playerObject = new Object(PLAYER, CUBE, 30, 30, 0, 25, 0, 1, 1);
+			this->isShooting = false;
+			this->playerObject = new Object(PLAYER, CONE, 30, 30, 0, 25, 0, 1, 1);
 		}
 
 		// Getters
@@ -49,12 +52,24 @@ class Player{
 			return this->movementSpeed;
 		}
 
+		float getShotCooldownMiliseconds() {
+			return this->shotCooldownMiliseconds;
+		}
+
+		float getInvulnerabilityTimeMiliseconds() {
+			return this->invulnerabilityTimeMiliseconds;
+		}
+
 		bool getIsAlive() {
 			return this->isAlive;
 		}
 
 		bool getInvulnerability() {
 			return this->isInvulnerable;
+		}
+
+		bool getIsShooting() {
+			return this->isShooting;
 		}
 
 		Object *getPlayerObject() {
@@ -86,12 +101,24 @@ class Player{
 			this->movementSpeed = movementSpeed;
 		}
 
+		void setShotCooldownMiliseconds(float shotCooldownMiliseconds) {
+			this->shotCooldownMiliseconds = shotCooldownMiliseconds;
+		}
+
+		void setInvulnerabilityTimeMiliseconds(float invulnerabilityTimeMiliseconds) {
+			this->invulnerabilityTimeMiliseconds = invulnerabilityTimeMiliseconds;
+		}
+
 		void setIsAlive(bool isAlive) {
 			this->isAlive = isAlive;
 		}
 
 		void setInvulnerability(bool isInvulnerable) {
 			this->isInvulnerable = isInvulnerable;
+		}
+		
+		void setIsShooting(bool isShooting) {
+			this->isShooting = isShooting;
 		}
 
 		void setPlayerObject(Object *playerObject) {
@@ -105,7 +132,7 @@ class Player{
 			this->movementSpeed = 10;
 			this->isAlive = true;
 			this->isInvulnerable = false;
-			this->playerObject = new Object(PLAYER, CUBE, 30, 30, 0, 25, 0, 1, 1);
+			this->playerObject = new Object(PLAYER, CONE, 30, 30, 0, 25, 0, 1, 1);
 		}
 
 		void moveUp() {
@@ -147,6 +174,10 @@ class Player{
 			if (this->isAlive) {
 				this->playerObject->render();
 			}
+		}
+
+		void resetShot() {
+			this->isShooting = false;
 		}
 };
 #endif
