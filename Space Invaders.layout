@@ -10,6 +10,9 @@
 		<File Name="game_classes\Object.h" Top="No" Tabpos="3" TopLine="126">
 			<Cursor Line="145" Column="21"/>
 		</File>
+		<File Name="main.cpp" Top="Yes" Tabpos="3" TopLine="1">
+			<Cursor Line="25" Column="20"/>
+		</File>
 		<File Name="game_classes\Projectile.h" Top="No" Tabpos="4" TopLine="1">
 			<Cursor Line="21" Column="67"/>
 			<Selection Line="21" Column="61"/>
