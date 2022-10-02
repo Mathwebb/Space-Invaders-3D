@@ -8,8 +8,7 @@
 class Enemy{
     private:
         int type;
-        float healthPoints, damagePoints, movementSpeed;
-        float shotCooldownMiliseconds;
+        float healthPoints, damagePoints, movementSpeed, shotCooldownMiliseconds;
         float movementDirection[3];
         bool isAlive, alreadyShot;
         Object *enemyObject;
@@ -21,7 +20,6 @@ class Enemy{
             this->movementSpeed = 2;
             this->isAlive = true;
             this->alreadyShot = false;
-            this->shotCooldownMiliseconds = 500;
             this->enemyObject = new Object();
         }
 
@@ -34,7 +32,6 @@ class Enemy{
             this->movementDirection[2] = 1;
             this->isAlive = true;
             this->alreadyShot = false;
-            this->shotCooldownMiliseconds = 500;
             this->enemyObject = new Object(ENEMY, SPHERE, x, y, z, 25, 1, 0, 0);
         }
 
@@ -75,10 +72,6 @@ class Enemy{
             return this->movementDirection[2];
         }
 
-		float getShotCooldownMiliseconds(){
-			return shotCooldownMiliseconds;
-		}
-		
         bool getIsAlive() {
             return this->isAlive;
         }
@@ -135,10 +128,6 @@ class Enemy{
         void setEnemyObject(Object *enemyObject) {
             this->enemyObject = enemyObject;
         }
-        
-        void setShotCooldownMiliseconds(float shotCooldownMiliseconds){
-			this->shotCooldownMiliseconds = shotCooldownMiliseconds;
-		}
 
         // Methods
         void moveEnemy(){
