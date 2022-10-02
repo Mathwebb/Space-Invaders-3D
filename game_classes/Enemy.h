@@ -8,14 +8,14 @@
 class Enemy{
     private:
         int type;
-        float healthPoints, damagePoints, movementSpeed;
+        float healthPoints, damagePoints, movementSpeed, shotCooldownMiliseconds;
         float movementDirection[3];
         bool isAlive, alreadyShot;
         Object *enemyObject;
     public:
         // Constructors
         Enemy(){
-            this->healthPoints = 100;
+            this->healthPoints = 10;
             this->damagePoints = 10;
             this->movementSpeed = 2;
             this->isAlive = true;
@@ -24,8 +24,8 @@ class Enemy{
         }
 
         Enemy(float x, float y, float z){
-            this->healthPoints = 100;
-            this->damagePoints = 50;
+            this->healthPoints = 10;
+            this->damagePoints = 10;
             this->movementSpeed = 2;
             this->movementDirection[0] = rand() % 3 - 1;
             this->movementDirection[1] = 0;
@@ -142,6 +142,7 @@ class Enemy{
                 this->isAlive = false;
             } else {
                 this->healthPoints -= damagePoints;
+                cout << healthPoints << endl;
             }
         }
 
