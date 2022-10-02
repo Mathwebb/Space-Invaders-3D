@@ -15,16 +15,10 @@ class Projectile{
         // Constructors
         Projectile(ProjectileOwner owner, float x, float y, float z){
             this->owner = owner;
-            this->damagePoints = 10;
+            this->damagePoints = 100;
             this->movementSpeed = 20;
             this->isAlive = true;
-            if(owner==PLAYER_PROJECTILE){
-				this->projectileObject = new Object(PROJECTILE, SPHERE, x, y, z, 10, 1, 1, 0);
-			}
-			else{
-				this->projectileObject = new Object(PROJECTILE, SPHERE, x, y, z, 10, 0, 1, 0);
-			}
-            
+            this->projectileObject = new Object(PROJECTILE, SPHERE, x, y, z, 10, 1, 1, 0);
         }
 
         // Getters
