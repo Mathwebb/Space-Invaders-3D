@@ -237,11 +237,15 @@ class Level{
 			for (unsigned int i = 0; i < this->projectiles.size(); i++){
                 this->projectiles[i].renderObject();
                 for (unsigned int j = 0; j < enemies.size(); j++){
-                    if (checkObjectsCollision(this->projectiles[i].getProjectileObject(), this->enemies[j].getEnemyObject())){
+                    if (checkObjectsCollision(this->projectiles[i].getProjectileObject(), this->enemies[j].getEnemyObject()) && projectiles[i].getOwner()==PLAYER_PROJECTILE){
                         this->projectiles.erase(this->projectiles.begin() + i);
                         this->enemies[j].takeDamage(this->projectiles[i].getDamagePoints());
                     }
                 }
+                if(checkObjectsCollision(this->projectiles[i].getProjectileObject(), this->player->getPlayerObject()) && projectiles[i].getOwner()==ENEMY_PROJECTILE){
+					this->projectiles.erase(this->projectiles.begin() + i);
+					this->player->takeDamage(this->projectiles[i].getDamagePoints());
+				}
             }
 
             for (unsigned int i = 0; i < enemies.size(); i++){
@@ -373,6 +377,21 @@ class Level{
                 this->projectiles.push_back(projectile);
                 player->setIsShooting(true);
             }
+        }
+        
+        void enemiesShot(){
+            for(unsigned int i = 0 ; i < enemies.size() ; i++){
+				if(!(this->enemies[i].getAlreadyShot())){
+					Projectile projectile(ENEMY_PROJECTILE, this->enemies[i].getCoordinateX(), this->enemies[i].getCoordinateY(), this->enemies[i].getCoordinateZ());
+					this->projectiles.push_back(projectile);
+					this->enemies[i].setAlreadyShot(true);
+					return;
+				}
+			}
+			for(unsigned int i = 0 ; i < enemies.size() ; i++){
+				this->enemies[i].setAlreadyShot(false);
+			}
+			enemiesShot();
         }
 
         void spawnInitialEnemies(){
