@@ -65,7 +65,7 @@ enum GameStates {
 	VICTORY
 };
 int windowWidth = 640, windowHeight = 480, angle = 0, selectedMenuOption = 0, gameState = 0;
-int actualLevel = 1, counterResetPlayerShot = 0, counterSpawnEnemy = 0;
+int actualLevel = 1, counterResetPlayerShot = 0, counterEnemyShot = 0, counterSpawnEnemy = 0;
 Level level;
 
 void initGlut(const char *nome_janela, int argc, char** argv);
@@ -77,6 +77,7 @@ void mouseCallback(int button, int state, int x, int y);
 void mousePassiveMotionCallback(int x, int y);
 void spawnEnemyAtRandomPosition(int n);
 void resetPlayerShot(int n);
+void enemyShot(int n);
 void timerCallback(int n);
 void enableLighting();
 void disableLighting();
@@ -123,6 +124,12 @@ void spawnEnemyAtRandomPosition(int n){
 	}
 }
 
+void enemyShot(int n){
+	if (gameState == GAME_RUNNING){
+		level.enemiesShot();
+	}
+}
+
 void resetPlayerShot(int n){
 	if (gameState == GAME_RUNNING){
 		level.getPlayer()->resetShot();
@@ -132,12 +139,19 @@ void resetPlayerShot(int n){
 void timerCallback(int n){
 	if(gameState == GAME_RUNNING){
 		counterResetPlayerShot+=50;
+		counterEnemyShot+=50;
 		counterSpawnEnemy+=50;
 		level.moveEnemies();
 		level.moveProjectiles();
 		if(counterResetPlayerShot>=level.getPlayer()->getShotCooldownMiliseconds()){
 			glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
 			counterResetPlayerShot=0;
+		}
+		if(level.getEnemies().size()!=0){
+			if(counterEnemyShot>=level.getEnemies()[0].getShotCooldownMiliseconds()){
+				glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), enemyShot, 0);
+				counterEnemyShot=0;
+			}
 		}
 		if(counterSpawnEnemy>=level.getEnemiesSpawnRateMiliseconds()){
 			glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
