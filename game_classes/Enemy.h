@@ -153,7 +153,6 @@ class Enemy{
                 this->isAlive = false;
             } else {
                 this->healthPoints -= damagePoints;
-                cout << healthPoints << endl;
             }
         }
 
