@@ -15,7 +15,7 @@ class Enemy{
     public:
         // Constructors
         Enemy(){
-            this->healthPoints = 100;
+            this->healthPoints = 10;
             this->damagePoints = 10;
             this->movementSpeed = 2;
             this->isAlive = true;
@@ -23,8 +23,8 @@ class Enemy{
             this->enemyObject = new Object();
         }
 
-        Enemy(float x, float y, float z){
-            this->healthPoints = 100;
+        Enemy(float x, float y, float z
+            this->healthPoints = 10;
             this->damagePoints = 10;
             this->movementSpeed = 2;
             this->movementDirection[0] = rand() % 3 - 1;
@@ -142,6 +142,7 @@ class Enemy{
                 this->isAlive = false;
             } else {
                 this->healthPoints -= damagePoints;
+                cout << healthPoints << endl;
             }
         }
 

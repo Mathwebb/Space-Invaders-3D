@@ -2,12 +2,14 @@
 #define LEVEL_H
 
 #include <vector>
-
+#include <string> 
+#include <iostream> 
 #include "Object.h"
 #include "Projectile.h"
 #include "Player.h"
 #include "Enemy.h"
 #include "../game_functions/check collisions.h"
+#include "../game_functions/renderers.h"
 
 using namespace std;
 
@@ -69,6 +71,7 @@ class Level{
             this->borderZMin = -1000;
             this->borderZMax = 100;
             this->spawnInitialEnemies();
+            cout << this->levelNumber << endl;
         }
 
         Level(int levelNumber, int borderXMin, int borderXMax, int borderYMin, int borderYMax, int borderZMin, int borderZMax){
@@ -120,6 +123,10 @@ class Level{
 
         int getEnemiesLeft(){
             return this->enemiesLeft;
+        }
+        
+        int getEnemiesToKill(){
+            return this->maxSpawnedEnemies-(this->enemiesKilled+this->enemiesEscaped);
         }
 
         int getEnemiesKilled(){
@@ -227,18 +234,12 @@ class Level{
         // Methods
         void renderLevel(){
             this->player->renderObject();
-
-            for (unsigned int i = 0; i < this->projectiles.size(); i++){
+			for (unsigned int i = 0; i < this->projectiles.size(); i++){
                 this->projectiles[i].renderObject();
                 for (unsigned int j = 0; j < enemies.size(); j++){
                     if (checkObjectsCollision(this->projectiles[i].getProjectileObject(), this->enemies[j].getEnemyObject())){
                         this->projectiles.erase(this->projectiles.begin() + i);
                         this->enemies[j].takeDamage(this->projectiles[i].getDamagePoints());
-                        if (this->enemies[j].getIsAlive() == false){
-                            this->enemies.erase(this->enemies.begin() + j);
-                            this->enemiesLeft--;
-                            this->enemiesKilled++;
-                        }
                     }
                 }
             }
@@ -250,7 +251,15 @@ class Level{
                     this->enemies[i].takeDamage(this->player->getDamagePoints());
                 }
             }
-
+            
+            for (unsigned int i = 0; i < enemies.size(); i++){
+            	if (this->enemies[i].getIsAlive() == false){
+                    this->enemies.erase(this->enemies.begin() + i);
+                    this->enemiesLeft--;
+                    this->enemiesKilled++;
+				}
+			}
+			
             if (this->ObjectiveHealthPoints <= 0 || this->player->getIsAlive() == false){
                 this->status = LEVEL_LOST;
             }
@@ -335,6 +344,10 @@ class Level{
         void clearEnemies(){
             enemies.clear();
         }
+        
+        void clearProjectiles(){
+			projectiles.clear();
+		}
 
         void resetLevel(){
             this->status = LEVEL_IN_PROGRESS;
@@ -349,9 +362,11 @@ class Level{
             this->ObjectiveHealthPoints = 100;
             this->player->resetPlayer();
             this->clearEnemies();
+            this->clearProjectiles();
             this->spawnInitialEnemies();
+            
         }
-
+		
         void playerShoot(){
             if (this->player->getIsAlive() && !this->player->getIsShooting()){
                 Projectile projectile(PLAYER_PROJECTILE, this->player->getPlayerObject()->getCoordinateX(), this->player->getPlayerObject()->getCoordinateY(), this->player->getPlayerObject()->getCoordinateZ());
@@ -369,7 +384,7 @@ class Level{
         }
 
         void spawnEnemy(){
-            if (enemiesLeft <= maxEnemiesInLevel && enemiesAlreadySpawned <= maxSpawnedEnemies){
+            if (enemiesLeft < maxEnemiesInLevel && enemiesAlreadySpawned < maxSpawnedEnemies){
                 enemies.push_back(Enemy((rand()%(int)borderXMax*2) - borderXMax, (rand()%(int)borderYMax*2) - borderYMax, -900));
                 this->enemiesLeft++;
                 this->enemiesAlreadySpawned++;

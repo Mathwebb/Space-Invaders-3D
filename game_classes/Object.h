@@ -139,7 +139,7 @@ class Object{
         void moveZ(float z) {
             this->z += z;
         }
-
+        
 		void render(){
 			glPushMatrix();
 				glTranslatef(this->x, this->y, this->z);
