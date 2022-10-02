@@ -52,20 +52,15 @@ enum PausedOptions {
 	RESTART = 1,
 	MAIN_MENU_PAUSED = 2
 };
-enum NextLevelOptions {
-	CONTINUE_NEXT_LEVEL = 0,
-	MAIN_MENU_NEXT_LEVEL = 1
-};
 enum GameStates {
 	MAIN_MENU,
 	GAME_RUNNING,
 	GAME_PAUSED,
 	GAME_OVER,
-	NEXT_LEVEL,
 	VICTORY
 };
 int windowWidth = 640, windowHeight = 480, angle = 0, selectedMenuOption = 0, gameState = 0;
-int actualLevel = 1, counterResetPlayerShot = 0, counterEnemyShot = 0, counterSpawnEnemy = 0;
+int actualLevel = 1, counterResetPlayerShot = 0, counterSpawnEnemy = 0;
 Level level;
 
 void initGlut(const char *nome_janela, int argc, char** argv);
@@ -77,7 +72,6 @@ void mouseCallback(int button, int state, int x, int y);
 void mousePassiveMotionCallback(int x, int y);
 void spawnEnemyAtRandomPosition(int n);
 void resetPlayerShot(int n);
-void enemyShot(int n);
 void timerCallback(int n);
 void enableLighting();
 void disableLighting();
@@ -115,18 +109,12 @@ void initGlut(const char *nome_janela, int argc, char** argv){
 	
     glShadeModel(GL_SMOOTH);
     glClearColor(1.0, 1.0, 1.0, 1.0);
-    sndPlaySound("musics/songMenu.wav", SND_ASYNC | SND_LOOP);
+    sndPlaySound(TEXT("musics/songMenu.wav"), SND_ASYNC);
 }
 
 void spawnEnemyAtRandomPosition(int n){
 	if (gameState == GAME_RUNNING){
 		level.spawnEnemy();
-	}
-}
-
-void enemyShot(int n){
-	if (gameState == GAME_RUNNING){
-		level.enemiesShot();
 	}
 }
 
@@ -139,19 +127,12 @@ void resetPlayerShot(int n){
 void timerCallback(int n){
 	if(gameState == GAME_RUNNING){
 		counterResetPlayerShot+=50;
-		counterEnemyShot+=50;
 		counterSpawnEnemy+=50;
 		level.moveEnemies();
 		level.moveProjectiles();
 		if(counterResetPlayerShot>=level.getPlayer()->getShotCooldownMiliseconds()){
 			glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), resetPlayerShot, 0);
 			counterResetPlayerShot=0;
-		}
-		if(level.getEnemies().size()!=0){
-			if(counterEnemyShot>=level.getEnemies()[0].getShotCooldownMiliseconds()){
-				glutTimerFunc(level.getPlayer()->getShotCooldownMiliseconds(), enemyShot, 0);
-				counterEnemyShot=0;
-			}
 		}
 		if(counterSpawnEnemy>=level.getEnemiesSpawnRateMiliseconds()){
 			glutTimerFunc(level.getEnemiesSpawnRateMiliseconds(), spawnEnemyAtRandomPosition, 0);
@@ -165,7 +146,7 @@ void timerCallback(int n){
 void reshapeCallback(int w, int h){
 	windowWidth = w;
 	windowHeight = h;
-    if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED || gameState == NEXT_LEVEL){
+    if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 		glMatrixMode(GL_PROJECTION);
 		disableLighting();
 
@@ -180,9 +161,8 @@ void reshapeCallback(int w, int h){
 	} else if (gameState == GAME_RUNNING){
 	    glMatrixMode (GL_PROJECTION);
 	    glClearColor(0.0, 0.0, 0.0, 1.0);
-
 		enableLighting();
-		
+
 	    glLoadIdentity();
 	
 	    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
@@ -205,7 +185,6 @@ void displayCallback(void){
 		renderMainMenu(selectedMenuOption, -windowWidth/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if(gameState == GAME_RUNNING){
 		level.renderLevel();
-		renderHUD(level);
 		if (level.getStatus() == LEVEL_LOST){
 			level.resetLevel();
 			gameState = GAME_OVER;
@@ -215,21 +194,16 @@ void displayCallback(void){
 			actualLevel++;
 			if (actualLevel > 10){
 				actualLevel = 1;
-				gameState = VICTORY;
-			}
-			else{
-				gameState = NEXT_LEVEL;
 			}
 			level = Level(actualLevel);
 			cout << "Level " << actualLevel << endl;
+			gameState = VICTORY;
 			reshapeCallback(windowWidth, windowHeight);
 		}
 	} else if (gameState == GAME_PAUSED){
 		renderPause(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if (gameState == GAME_OVER){
 		renderGameOver(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
-	} else if (gameState == NEXT_LEVEL){
-		renderNextLevel(selectedMenuOption, -windowWidth/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	} else if (gameState == VICTORY){
 		renderVictory(selectedMenuOption, -windowHeight/2+windowWidth*0.1, 0.0, 0.0, 20.0);
 	}
@@ -253,13 +227,13 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case ESCAPE:
 			if(gameState == GAME_RUNNING){
 				sndPlaySound(NULL, SND_ASYNC);
-				sndPlaySound("musics/songMenu.wav", SND_ASYNC);
+				sndPlaySound(TEXT("musics/songMenu.wav"), SND_ASYNC);
 				gameState = GAME_PAUSED;
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
 			} else if(gameState == GAME_PAUSED){
 				sndPlaySound(NULL, SND_ASYNC);
-				sndPlaySound("musics/songGame.wav", SND_ASYNC);
+				sndPlaySound(TEXT("musics/songGame.wav"), SND_ASYNC);
 				gameState = GAME_RUNNING;
 				reshapeCallback(windowWidth, windowHeight);
 				displayCallback();
@@ -272,7 +246,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 			if (gameState == MAIN_MENU){
 				if (selectedMenuOption == START_GAME){
 					sndPlaySound(NULL, SND_ASYNC);
-					//sndPlaySound("musics/songGame.wav", SND_ASYNC);
+					sndPlaySound(TEXT("musics/songGame.wav"), SND_ASYNC);
 					gameState = GAME_RUNNING;
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
@@ -283,31 +257,14 @@ void keyboardCallback(unsigned char key, int x, int y){
 			if (gameState == GAME_OVER){
 				if (selectedMenuOption == TRY_AGAIN){
 					sndPlaySound(NULL, SND_ASYNC);
-					sndPlaySound("musics/songGame.wav", SND_ASYNC);
+					sndPlaySound(TEXT("musics/songGame.wav"), SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == GIVE_UP){
 					sndPlaySound(NULL, SND_ASYNC);
-					sndPlaySound("musics/songMenu.wav", SND_ASYNC);
-					gameState = MAIN_MENU;
-					selectedMenuOption=0;
-					level.resetLevel();
-					reshapeCallback(windowWidth, windowHeight);
-					displayCallback();
-				}
-			}
-			if (gameState == NEXT_LEVEL){
-				if (selectedMenuOption == CONTINUE_NEXT_LEVEL){
-					sndPlaySound(NULL, SND_ASYNC);
-					sndPlaySound("musics/songGame.wav", SND_ASYNC);
-					gameState = GAME_RUNNING;
-					reshapeCallback(windowWidth, windowHeight);
-					displayCallback();
-				} else if (selectedMenuOption == MAIN_MENU_NEXT_LEVEL){
-					sndPlaySound(NULL, SND_ASYNC);
-					sndPlaySound("musics/songMenu.wav", SND_ASYNC);
+					sndPlaySound(TEXT("musics/songMenu.wav"), SND_ASYNC);
 					gameState = MAIN_MENU;
 					selectedMenuOption=0;
 					level.resetLevel();
@@ -318,14 +275,14 @@ void keyboardCallback(unsigned char key, int x, int y){
 			if (gameState == VICTORY){
 				if (selectedMenuOption == PLAY_AGAIN){
 					sndPlaySound(NULL, SND_ASYNC);
-					sndPlaySound("musics/songGame.wav", SND_ASYNC);
+					sndPlaySound(TEXT("musics/songGame.wav"), SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == VICTORY_EXIT){
 					sndPlaySound(NULL, SND_ASYNC);
-					sndPlaySound("musics/songMenu.wav", SND_ASYNC);
+					sndPlaySound(TEXT("musics/songMenu.wav"), SND_ASYNC);
 					gameState = MAIN_MENU;
 					selectedMenuOption=0;
 					level.resetLevel();
@@ -336,20 +293,20 @@ void keyboardCallback(unsigned char key, int x, int y){
 			if (gameState == GAME_PAUSED){
 				if (selectedMenuOption == CONTINUE){
 					sndPlaySound(NULL, SND_ASYNC);
-					sndPlaySound("musics/songGame.wav", SND_ASYNC);
+					sndPlaySound(TEXT("musics/songGame.wav"), SND_ASYNC);
 					gameState = GAME_RUNNING;
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == RESTART){
 					sndPlaySound(NULL, SND_ASYNC);
-					sndPlaySound("musics/songGame.wav", SND_ASYNC);
+					sndPlaySound(TEXT("musics/songGame.wav"), SND_ASYNC);
 					gameState = GAME_RUNNING;
 					level.resetLevel();
 					reshapeCallback(windowWidth, windowHeight);
 					displayCallback();
 				} else if (selectedMenuOption == MAIN_MENU_PAUSED){
 					sndPlaySound(NULL, SND_ASYNC);
-					sndPlaySound("musics/songMenu.wav", SND_ASYNC);
+					sndPlaySound(TEXT("musics/songMenu.wav"), SND_ASYNC);
 					gameState = MAIN_MENU;
 					selectedMenuOption=0;
 					level.resetLevel();
@@ -363,13 +320,13 @@ void keyboardCallback(unsigned char key, int x, int y){
 				level.playerShoot();
 			}
 		case NUMBER_0:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED || gameState == NEXT_LEVEL){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 				selectedMenuOption = 0;
 				displayCallback();
 			}
 			break;
 		case NUMBER_1:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED || gameState == NEXT_LEVEL){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 				selectedMenuOption = 1;
 				displayCallback();
 			}
@@ -391,7 +348,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 void keyboardCallbackSpecial(int key, int x, int y){
 	switch(key){
 		case GLUT_KEY_UP:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED || gameState == NEXT_LEVEL){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED){
 				if (selectedMenuOption > 0){
 					selectedMenuOption--;
 					displayCallback();
@@ -411,7 +368,7 @@ void keyboardCallbackSpecial(int key, int x, int y){
 			break;
 		
 		case GLUT_KEY_DOWN:
-			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == NEXT_LEVEL){
+			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY){
 				if (selectedMenuOption < 1){
 					selectedMenuOption++;
 					displayCallback();
