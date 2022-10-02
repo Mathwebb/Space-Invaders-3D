@@ -272,6 +272,7 @@ class Level{
             }
         }
 
+        // Move Methods
         void movePlayerUp(){
             if (!this->player->getPlayerObject()->checkCollisionTopBorder(this->borderYMax)){
                 this->player->moveUp();
@@ -345,6 +346,7 @@ class Level{
             }
         }
 
+        // Clear Methods
         void clearEnemies(){
             enemies.clear();
         }
@@ -371,6 +373,7 @@ class Level{
             
         }
 		
+        // Shot Methods
         void playerShoot(){
             if (this->player->getIsAlive() && !this->player->getIsShooting()){
                 Projectile projectile(PLAYER_PROJECTILE, this->player->getPlayerObject()->getCoordinateX(), this->player->getPlayerObject()->getCoordinateY(), this->player->getPlayerObject()->getCoordinateZ());
