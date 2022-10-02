@@ -23,7 +23,7 @@ class Enemy{
             this->enemyObject = new Object();
         }
 
-        Enemy(float x, float y, float z){
+        Enemy(float x, float y, float z
             this->healthPoints = 10;
             this->damagePoints = 10;
             this->movementSpeed = 2;
