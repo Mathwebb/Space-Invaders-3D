@@ -239,13 +239,13 @@ class Level{
                     if (checkObjectsCollision(this->projectiles[i].getProjectileObject(), this->enemies[j].getEnemyObject()) && projectiles[i].getOwner()==PLAYER_PROJECTILE){
                         this->projectiles.erase(this->projectiles.begin() + i);
                         this->enemies[j].takeDamage(this->projectiles[i].getDamagePoints());
-                        sndPlaySound("musics/enemyDestroy.wav", SND_ASYNC);
+                        sndPlaySound("assets/sounds/enemyDestroy.wav", SND_ASYNC);
                     }
                 }
                 if(checkObjectsCollision(this->projectiles[i].getProjectileObject(), this->player->getPlayerObject()) && projectiles[i].getOwner()==ENEMY_PROJECTILE){
 					this->projectiles.erase(this->projectiles.begin() + i);
 					this->player->takeDamage(this->projectiles[i].getDamagePoints());
-					sndPlaySound("musics/playerDamage.wav", SND_ASYNC);
+					sndPlaySound("assets/sounds/playerDamage.wav", SND_ASYNC);
 				}
             }
 
@@ -254,7 +254,7 @@ class Level{
                 if (checkObjectsCollision(this->player->getPlayerObject(), this->enemies[i].getEnemyObject())){
                     this->player->takeDamage(this->enemies[i].getDamagePoints());
                     this->enemies[i].takeDamage(this->player->getDamagePoints());
-                    sndPlaySound("musics/playerDamage.wav", SND_ASYNC);
+                    sndPlaySound("assets/sounds/playerDamage.wav", SND_ASYNC);
                 }
             }
             
@@ -268,7 +268,7 @@ class Level{
 			
             if (this->ObjectiveHealthPoints <= 0 || this->player->getIsAlive() == false){
                 this->status = LEVEL_LOST;
-                sndPlaySound("musics/levelLost.wav", SND_ASYNC);
+                sndPlaySound("assets/sounds/levelLost.wav", SND_ASYNC);
             }
             if (this->enemies.size() == 0){
                 this->status = LEVEL_WON;
@@ -379,7 +379,7 @@ class Level{
                 Projectile projectile(PLAYER_PROJECTILE, this->player->getPlayerObject()->getCoordinateX(), this->player->getPlayerObject()->getCoordinateY(), this->player->getPlayerObject()->getCoordinateZ());
                 this->projectiles.push_back(projectile);
                 player->setIsShooting(true);
-                sndPlaySound("musics/playerShot.wav", SND_ASYNC);
+                sndPlaySound("assets/sounds/playerShot.wav", SND_ASYNC);
             }
         }
         

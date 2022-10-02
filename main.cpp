@@ -1,3 +1,6 @@
+//Autores: Matheus Luis Webber e Pedro Henryque Nery de Oliveira
+//Link para Git Hub: https://github.com/Mathwebb/Space-Invaders-3D
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -215,10 +218,10 @@ void displayCallback(void){
 			if (actualLevel > 10){
 				actualLevel = 1;
 				gameState = VICTORY;
-				sndPlaySound("musics/victory.wav", SND_ASYNC);
+				sndPlaySound("assets/sounds/victory.wav", SND_ASYNC);
 			}
 			else{
-				sndPlaySound("musics/levelWon.wav", SND_ASYNC);
+				sndPlaySound("assets/sounds/levelWon.wav", SND_ASYNC);
 				gameState = NEXT_LEVEL;
 			}
 			level = Level(actualLevel);
@@ -266,7 +269,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 			break;
 		case ENTER:
 			if (gameState == MAIN_MENU){
-				sndPlaySound("musics/click.wav", SND_SYNC);
+				sndPlaySound("assets/sounds/click.wav", SND_SYNC);
 				if (selectedMenuOption == START_GAME){
 					gameState = GAME_RUNNING;
 					reshapeCallback(windowWidth, windowHeight);
@@ -276,7 +279,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 				}
 			}
 			if (gameState == GAME_OVER){
-				sndPlaySound("musics/click.wav", SND_SYNC);
+				sndPlaySound("assets/sounds/click.wav", SND_SYNC);
 				if (selectedMenuOption == TRY_AGAIN){
 					gameState = GAME_RUNNING;
 					level.resetLevel();
@@ -291,7 +294,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 				}
 			}
 			if (gameState == NEXT_LEVEL){
-				sndPlaySound("musics/click.wav", SND_SYNC);
+				sndPlaySound("assets/sounds/click.wav", SND_SYNC);
 				if (selectedMenuOption == CONTINUE_NEXT_LEVEL){
 					gameState = GAME_RUNNING;
 					reshapeCallback(windowWidth, windowHeight);
@@ -305,7 +308,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 				}
 			}
 			if (gameState == VICTORY){
-				sndPlaySound("musics/click.wav", SND_SYNC);
+				sndPlaySound("assets/sounds/click.wav", SND_SYNC);
 				if (selectedMenuOption == PLAY_AGAIN){
 					gameState = GAME_RUNNING;
 					level.resetLevel();
@@ -320,7 +323,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 				}
 			}
 			if (gameState == GAME_PAUSED){
-				sndPlaySound("musics/click.wav", SND_SYNC);
+				sndPlaySound("assets/sounds/click.wav", SND_SYNC);
 				if (selectedMenuOption == CONTINUE){
 					gameState = GAME_RUNNING;
 					reshapeCallback(windowWidth, windowHeight);
@@ -345,21 +348,21 @@ void keyboardCallback(unsigned char key, int x, int y){
 			}
 		case NUMBER_0:
 			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED || gameState == NEXT_LEVEL){
-				sndPlaySound("musics/swapOptions.wav", SND_ASYNC);
+				sndPlaySound("assets/sounds/swapOptions.wav", SND_ASYNC);
 				selectedMenuOption = 0;
 				displayCallback();
 			}
 			break;
 		case NUMBER_1:
 			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED || gameState == NEXT_LEVEL){
-				sndPlaySound("musics/swapOptions.wav", SND_ASYNC);
+				sndPlaySound("assets/sounds/swapOptions.wav", SND_ASYNC);
 				selectedMenuOption = 1;
 				displayCallback();
 			}
 			break;
 		case NUMBER_2:
 			if (gameState == GAME_PAUSED){
-				sndPlaySound("musics/swapOptions.wav", SND_ASYNC);
+				sndPlaySound("assets/sounds/swapOptions.wav", SND_ASYNC);
 				selectedMenuOption = 2;
 				displayCallback();
 			}
@@ -376,7 +379,7 @@ void keyboardCallbackSpecial(int key, int x, int y){
 	switch(key){
 		case GLUT_KEY_UP:
 			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == GAME_PAUSED || gameState == NEXT_LEVEL){
-				sndPlaySound("musics/swapOptions.wav", SND_ASYNC);
+				sndPlaySound("assets/sounds/swapOptions.wav", SND_ASYNC);
 				if (selectedMenuOption > 0){
 					selectedMenuOption--;
 					displayCallback();
@@ -397,7 +400,7 @@ void keyboardCallbackSpecial(int key, int x, int y){
 		
 		case GLUT_KEY_DOWN:
 			if (gameState == MAIN_MENU || gameState == GAME_OVER || gameState == VICTORY || gameState == NEXT_LEVEL){
-				sndPlaySound("musics/swapOptions.wav", SND_ASYNC);
+				sndPlaySound("assets/sounds/swapOptions.wav", SND_ASYNC);
 				if (selectedMenuOption < 1){
 					selectedMenuOption++;
 					displayCallback();
@@ -407,6 +410,7 @@ void keyboardCallbackSpecial(int key, int x, int y){
 					displayCallback();
 				}
 			}else if (gameState == GAME_PAUSED){
+				sndPlaySound("assets/sounds/swapOptions.wav", SND_ASYNC);
 				if (selectedMenuOption < 2){
 					selectedMenuOption++;
 					displayCallback();
